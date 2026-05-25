@@ -7,7 +7,7 @@ const PUBLIC_PATHS = ["/login", "/register"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path)) || pathname.startsWith("/api");
   const isAuthenticated = request.cookies.get(AUTH_COOKIE)?.value === "1";
 
   if (!isAuthenticated && !isPublic) {
@@ -19,6 +19,7 @@ export function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
+
 }
 
 export const config = {
