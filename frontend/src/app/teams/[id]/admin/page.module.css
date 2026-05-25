@@ -1,0 +1,298 @@
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0 0 0.35rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.statCard strong {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.statCard span {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.table th {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.hierarchyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hierarchyItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+}
+
+.rank {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #1e3a5f;
+  color: #93c5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.perms {
+  flex: 1;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.addMember {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.addMember input,
+.addMember select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.addMember button {
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  border: none;
+  background: #3b82f6;
+  color: #fff;
+  cursor: pointer;
+}
+
+.dangerBtn {
+  background: transparent;
+  border: 1px solid #7f1d1d;
+  color: #fca5a5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.roleSelect {
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+}
+
+.error {
+  color: #f87171;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #60a5fa;
+}
+
+.boardList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.boardList a {
+  color: #60a5fa;
+}
+
+.autocompleteContainer {
+  position: relative;
+  display: inline-block;
+  flex: 1;
+  min-width: 200px;
+}
+
+.autocompleteContainer input {
+  width: 100%;
+}
+
+.suggestionsList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  margin-top: 0.25rem;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.suggestionsList li {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.suggestionsList li:last-child {
+  border-bottom: none;
+}
+
+.suggestionsList li:hover {
+  background: #1e293b;
+}
+
+.suggestionUsername {
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.suggestionEmail {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.inviteGenerator {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.inviteGenerator select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.generateBtn {
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  border: none;
+  background: #10b981;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.generateBtn:hover {
+  background: #059669;
+}
+
+.inviteResult {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  max-width: 600px;
+}
+
+.inviteUrlInput {
+  flex: 1;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #38bdf8;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.copyBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #3b82f6;
+  background: transparent;
+  color: #3b82f6;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.copyBtn:hover {
+  background: #3b82f6;
+  color: #fff;
+}
+

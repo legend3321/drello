@@ -1,0 +1,90 @@
+.card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.dragging {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  border-color: #3b82f6;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.handle {
+  flex-shrink: 0;
+  color: #64748b;
+  cursor: grab;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.1rem;
+  user-select: none;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.body:hover .title {
+  color: #3b82f6;
+}
+
+.title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  transition: color 0.15s;
+}
+
+.optionsBtn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem 0.35rem;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.optionsBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
+
+.delete {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  border-radius: 4px;
+}
+
+.delete:hover {
+  background: #7f1d1d;
+  color: #fff;
+}
+
+.description {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}

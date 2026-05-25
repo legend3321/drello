@@ -1,0 +1,13 @@
+.main {
+  max-width: none;
+  padding: 1.5rem;
+}
+
+.nav {
+  margin-bottom: 1rem;
+}
+
+.nav a {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}

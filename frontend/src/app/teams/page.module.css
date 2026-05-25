@@ -1,0 +1,102 @@
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+}
+
+.hero p {
+  margin: 0 0 1.25rem;
+  color: #94a3b8;
+}
+
+.createForm {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.createInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.createBtn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #3b82f6;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.teamItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+}
+
+.teamName {
+  flex: 1;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+
+.linkBtn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  background: #1e293b;
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.linkBtn:hover {
+  background: #334155;
+  text-decoration: none;
+}
+
+.adminBtn {
+  background: #422006;
+  color: #fcd34d;
+}
+
+.error {
+  color: #f87171;
+}
+
+.hint {
+  color: #64748b;
+}

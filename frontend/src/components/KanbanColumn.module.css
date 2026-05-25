@@ -1,0 +1,116 @@
+.column {
+  flex: 0 0 280px;
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 7rem);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  background: #334155;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+}
+
+.pillTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f8fafc;
+  flex: 1;
+  min-width: 0;
+}
+
+.deleteColumn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+.deleteColumn:hover {
+  background: #7f1d1d;
+  color: #fff;
+}
+
+.count {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  background: #334155;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 120px;
+  overflow-y: auto;
+  flex: 1;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.over {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.addCard {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.addInput {
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 0.45rem 0.55rem;
+  background: #0f172a;
+  color: #f1f5f9;
+  font-size: 0.8rem;
+}
+
+.addInput:focus {
+  outline: 2px solid #3b82f6;
+}
+
+.addBtn {
+  background: transparent;
+  border: 1px solid #475569;
+  color: #cbd5e1;
+  border-radius: 6px;
+  padding: 0.35rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.addBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.addBtn:hover:not(:disabled) {
+  background: #334155;
+}
