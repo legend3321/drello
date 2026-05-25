@@ -11,3 +11,7 @@ frontend/.env*.local
 
 # OS
 .DS_Store
+
+# Staticfiles
+backend/staticfiles/
+
