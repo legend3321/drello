@@ -4,11 +4,38 @@ from teams.models import Team
 from .models import Board, Card, List, Comment, ActivityLog
 
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+
+class UserSummarySerializer(serializers.ModelSerializer):
+    avatar_emoji = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "avatar_emoji"]
+
+    def get_avatar_emoji(self, obj):
+        try:
+            return obj.profile.avatar_emoji
+        except Exception:
+            return "😀"
+
+
 class CardSerializer(serializers.ModelSerializer):
     list_id = serializers.PrimaryKeyRelatedField(
         source="list", queryset=List.objects.all(), write_only=True
     )
     board_id = serializers.IntegerField(read_only=True)
+    assigned_users = UserSummarySerializer(many=True, read_only=True)
+    assigned_user_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all(),
+        source="assigned_users",
+        write_only=True,
+        required=False,
+    )
+    comments_count = serializers.IntegerField(source="comments.count", read_only=True)
 
     class Meta:
         model = Card
@@ -19,6 +46,14 @@ class CardSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "position",
+            "priority",
+            "story_points",
+            "labels",
+            "checklist",
+            "attachments",
+            "assigned_users",
+            "assigned_user_ids",
+            "comments_count",
             "created_at",
             "updated_at",
         ]
@@ -66,6 +101,7 @@ class BoardSerializer(serializers.ModelSerializer):
         data["team_id"] = instance.team_id
         data["team_name"] = instance.team.name if instance.team_id else None
         data["owner_username"] = instance.owner.username
+        data["owner_id"] = instance.owner.id
         data["owner_email"] = instance.owner.email
         data["owner_avatar_emoji"] = getattr(getattr(instance.owner, "profile", None), "avatar_emoji", "😀")
 

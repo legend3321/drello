@@ -5,6 +5,13 @@ export interface Card {
   title: string;
   description: string;
   position: number;
+  priority?: "highest" | "medium" | "low";
+  story_points?: number;
+  labels?: { text: string; color: string }[];
+  checklist?: { id: string; text: string; done: boolean }[];
+  attachments?: { id: string; name: string; url: string }[];
+  assigned_users?: { id: number; username: string; email: string; avatar_emoji?: string }[];
+  comments_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -25,6 +32,7 @@ export interface Board {
   updated_at: string;
   team_id?: number | null;
   team_name?: string | null;
+  owner_id?: number;
   owner_username?: string;
   owner_email?: string;
   owner_avatar_emoji?: string;

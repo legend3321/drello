@@ -38,11 +38,25 @@ class List(models.Model):
         return f"{self.board.title} — {self.title}"
 
 
+def default_json_list():
+    return []
+
+
 class Card(models.Model):
     list = models.ForeignKey(List, related_name="cards", on_delete=models.CASCADE)
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True, default="")
     position = models.PositiveIntegerField(default=0)
+    priority = models.CharField(max_length=20, default="medium")  # highest, medium, low
+    story_points = models.PositiveIntegerField(default=0, null=True, blank=True)
+    labels = models.JSONField(default=default_json_list, blank=True)  # e.g., [{"text": "inception", "color": "#10b981"}]
+    checklist = models.JSONField(default=default_json_list, blank=True)  # e.g., [{"id": "1", "text": "Task", "done": false}]
+    attachments = models.JSONField(default=default_json_list, blank=True)  # e.g., [{"id": "1", "name": "Preview.png", "url": "/..."}]
+    assigned_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="assigned_cards",
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

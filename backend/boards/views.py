@@ -225,6 +225,8 @@ class CardViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Read-only access to this board.")
         old_title = serializer.instance.title
         old_desc = serializer.instance.description
+        old_priority = serializer.instance.priority
+        old_points = serializer.instance.story_points
         instance = serializer.save()
 
         detail_messages = []
@@ -232,6 +234,10 @@ class CardViewSet(viewsets.ModelViewSet):
             detail_messages.append(f"Renamed card from '{old_title}' to '{instance.title}'")
         if old_desc != instance.description:
             detail_messages.append(f"Updated description of card '{instance.title}'")
+        if old_priority != instance.priority:
+            detail_messages.append(f"Changed priority of card '{instance.title}' to '{instance.priority}'")
+        if old_points != instance.story_points:
+            detail_messages.append(f"Changed story points of card '{instance.title}' to {instance.story_points}")
 
         if detail_messages:
             ActivityLog.objects.create(

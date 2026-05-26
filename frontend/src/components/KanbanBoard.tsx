@@ -9,7 +9,7 @@ import type { DragResult as MovePayload } from "@/types/board";
 import { KanbanColumn } from "./KanbanColumn";
 import styles from "./KanbanBoard.module.css";
 
-export function KanbanBoard() {
+export function KanbanBoard({ onSelectCard }: { onSelectCard: (id: number) => void }) {
   const board = useBoardStore((s) => s.board);
   const addList = useBoardStore((s) => s.addList);
   const moveCardOptimistic = useBoardStore((s) => s.moveCardOptimistic);
@@ -57,7 +57,7 @@ export function KanbanBoard() {
     <DragDropContext onDragEnd={onDragEnd}>
       <div className={styles.board}>
         {board.lists.map((list) => (
-          <KanbanColumn key={list.id} list={list} />
+          <KanbanColumn key={list.id} list={list} onSelectCard={onSelectCard} />
         ))}
 
         {canEdit ? (

@@ -1,0 +1,501 @@
+.appLayout {
+  display: flex;
+  min-height: 100vh;
+  background: #080d16;
+  color: #f1f5f9;
+}
+
+/* Sidebar Layout */
+.sidebar {
+  width: 260px;
+  background: #0b121f;
+  border-right: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 100;
+  position: relative;
+}
+
+.brandArea {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.trelloIcon {
+  width: 24px;
+  height: 24px;
+  background: #2563eb;
+  border-radius: 4px;
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+}
+
+.trelloIconBar1 {
+  width: 7px;
+  height: 12px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+.trelloIconBar2 {
+  width: 7px;
+  height: 8px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+.brandText {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.025em;
+}
+
+.navSection {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.menuList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.menuLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  color: #94a3b8;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.menuLink:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+}
+
+.menuLinkActive {
+  background: rgba(37, 99, 235, 0.1);
+  color: #3b82f6 !important;
+}
+
+.menuLinkIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuLinkText {
+  flex: 1;
+}
+
+.menuArrow {
+  font-size: 0.75rem;
+  color: #475569;
+  transition: transform 0.2s;
+}
+
+.menuArrowExpanded {
+  transform: rotate(180deg);
+}
+
+/* Collapsible Submenu */
+.submenuList {
+  list-style: none;
+  padding: 0.25rem 0 0.25rem 2.25rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.submenuLink {
+  display: block;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.submenuLink:hover {
+  color: #f1f5f9;
+}
+
+/* Categories Section */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.sectionHeader span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #475569;
+  letter-spacing: 0.05em;
+}
+
+.sectionAddBtn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  border-radius: 4px;
+}
+
+.sectionAddBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.categoryDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* User Card area */
+.userSection {
+  padding: 1rem;
+  border-top: 1px solid #1e293b;
+  background: #090d16;
+  position: relative;
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.userCard:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-size: 0.75rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userOptionsBtn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.userOptionsBtn:hover {
+  color: #fff;
+}
+
+/* Dropdown Menu */
+.userDropdown {
+  position: absolute;
+  bottom: 4.25rem;
+  left: 1rem;
+  right: 1rem;
+  background: #111827;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  border-radius: 6px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dropdownItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.dropdownItemDanger {
+  color: #f87171;
+}
+
+.dropdownItemDanger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Content Area */
+.mainContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Top Header Bar */
+.topHeader {
+  height: 64px;
+  background: #090d16;
+  border-bottom: 1px solid #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.breadcrumbActive {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.searchWrapper {
+  position: relative;
+  width: 280px;
+}
+
+.searchInput {
+  width: 100%;
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  font-size: 0.825rem;
+  color: #f1f5f9;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.searchInput:focus {
+  border-color: #3b82f6;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+/* Theme Toggle Pill Style */
+.themeToggle {
+  display: flex;
+  background: #111827;
+  border: 1px solid #1e293b;
+  padding: 2px;
+  border-radius: 20px;
+  gap: 2px;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.725rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 15px;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s;
+}
+
+.toggleBtnActive {
+  background: #1e293b;
+  color: #fff;
+}
+
+.actionIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.iconBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Premium Gold Button */
+.premiumBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+  transition: opacity 0.15s;
+}
+
+.premiumBtn:hover {
+  opacity: 0.9;
+}
+
+/* Page wrapper container */
+.pageContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Mobile responsive hamburger overlay styles */
+.menuToggleBtn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .menuToggleBtn {
+    display: block;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -260px;
+    transition: left 0.3s ease;
+  }
+  
+  .sidebarOpen {
+    left: 0;
+  }
+  
+  .sidebarOverlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 99;
+  }
+  
+  .searchInput {
+    display: none; /* Hide search input on tablet/mobile header for space */
+  }
+}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { AppHeader } from "@/components/AppHeader";
+import { AppShell } from "@/components/AppShell";
 import { AuthProvider } from "@/components/AuthProvider";
 
 import "./globals.css";
@@ -23,8 +23,9 @@ export default function RootLayout({
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body>
         <AuthProvider>
-          <AppHeader />
-          {children}
+          <AppShell>
+            {children}
+          </AppShell>
         </AuthProvider>
       </body>
     </html>

@@ -10,6 +10,7 @@ import type { BoardSummary } from "@/types/board";
 import type { TeamSummary } from "@/types/team";
 
 import { InlineEdit } from "./InlineEdit";
+import { Trash2, ArrowRight } from "lucide-react";
 import styles from "../app/page.module.css";
 
 const containerVariants: Variants = {
@@ -114,22 +115,11 @@ export function Dashboard() {
       <header className={styles.hero}>
         <h1>Your boards {activeTeam ? `— ${activeTeam.name}` : ""}</h1>
         <p>
-          Create personal or team boards. Manage teams and roles from{" "}
-          <Link href="/teams">Teams</Link>
-          {teams.some((t) => t.my_role?.can_manage_team) ? (
-            <>
-              {" "}
-              or open a{" "}
-              <Link href={`/teams/${teams.find((t) => t.my_role?.can_manage_team)?.id}/admin`}>
-                team admin dashboard
-              </Link>
-            </>
-          ) : null}
-          .
+          Create, complete, and manage your tasks using the Drello tasks board.
         </p>
 
         {filterTeamId ? (
-          <p className={styles.hint} style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+          <p className={styles.hint} style={{ marginTop: "1rem", marginBottom: "1rem", textAlign: "left", padding: 0 }}>
             Showing boards for <strong>{activeTeam?.name || "Team"}</strong>.{" "}
             <Link href="/" style={{ color: "#3b82f6", textDecoration: "underline" }}>
               Show all boards
@@ -165,8 +155,23 @@ export function Dashboard() {
         </form>
       </header>
 
-      {loading ? <p className={styles.hint}>Loading boards…</p> : null}
+      {/* Filter Row matching mockup dropdown styling */}
+      <div className={styles.filterRow}>
+        <select className={styles.filterSelect} defaultValue="sort">
+          <option value="sort">Sort by</option>
+          <option value="name">Name</option>
+          <option value="date">Date</option>
+        </select>
+        <select className={styles.filterSelect} defaultValue="2-weeks">
+          <option value="2-weeks">2 Weeks</option>
+          <option value="1-month">1 Month</option>
+          <option value="all-time">All Time</option>
+        </select>
+      </div>
+
       {error ? <p className={styles.error}>{error}</p> : null}
+
+      {loading ? <p className={styles.hint}>Loading boards…</p> : null}
 
       {!loading && !error && filteredBoards.length === 0 ? (
         <p className={styles.hint}>
@@ -189,9 +194,6 @@ export function Dashboard() {
               variants={itemVariants}
               className={styles.boardItem}
             >
-              <Link href={`/boards/${board.id}`} className={styles.boardLink}>
-                Open →
-              </Link>
               <div className={styles.boardMeta}>
                 <InlineEdit
                   value={board.title}
@@ -205,16 +207,22 @@ export function Dashboard() {
                   <span className={styles.teamBadgePersonal}>Personal</span>
                 )}
               </div>
-              {board.permissions?.can_delete ? (
-                <button
-                  type="button"
-                  className={styles.deleteBtn}
-                  onClick={() => void removeBoard(board.id, board.title)}
-                  aria-label={`Delete ${board.title}`}
-                >
-                  Delete
-                </button>
-              ) : null}
+              <div className={styles.boardFooter}>
+                <Link href={`/boards/${board.id}`} className={styles.boardLink}>
+                  Open <ArrowRight size={14} />
+                </Link>
+                {board.permissions?.can_delete ? (
+                  <button
+                    type="button"
+                    className={styles.deleteBtn}
+                    onClick={() => void removeBoard(board.id, board.title)}
+                    aria-label={`Delete ${board.title}`}
+                    title="Delete board"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                ) : null}
+              </div>
             </motion.li>
           ))}
         </motion.ul>

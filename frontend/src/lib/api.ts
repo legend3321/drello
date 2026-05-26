@@ -97,7 +97,16 @@ export const api = {
 
   updateCard: (
     id: number,
-    data: { title?: string; description?: string },
+    data: { 
+      title?: string; 
+      description?: string;
+      priority?: "highest" | "medium" | "low";
+      story_points?: number;
+      labels?: { text: string; color: string }[];
+      checklist?: { id: string; text: string; done: boolean }[];
+      attachments?: { id: string; name: string; url: string }[];
+      assigned_user_ids?: number[];
+    },
   ) =>
     request<Card>(`/api/cards/${id}/`, {
       method: "PATCH",

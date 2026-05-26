@@ -14,6 +14,7 @@ import { KanbanBoard } from "./KanbanBoard";
 import { ToastStack } from "./ToastStack";
 import { HistoryModal } from "./HistoryModal";
 import { EmojiAvatar } from "./EmojiAvatar";
+import { CardDetailPanel } from "./CardDetailPanel";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./BoardWorkspace.module.css";
 
@@ -34,6 +35,8 @@ export function BoardWorkspace({ boardId }: Props) {
   
   const [showMembersSidebar, setShowMembersSidebar] = useState(true);
   const [showChatSidebar, setShowChatSidebar] = useState(true);
+
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
 
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [chatMessages, setChatMessages] = useState<BoardChatMessage[]>([]);
@@ -332,7 +335,19 @@ export function BoardWorkspace({ boardId }: Props) {
             </span>
           </p>
         </header>
-        <KanbanBoard />
+
+        {/* View Tabs Bar matching mockup */}
+        <div className={styles.tabsBar}>
+          <button type="button" className={styles.tab}>Kanban</button>
+          <button type="button" className={`${styles.tab} ${styles.tabActive}`}>Board</button>
+          <button type="button" className={styles.tab}>Table</button>
+          <button type="button" className={styles.tab}>Calendar</button>
+          <button type="button" className={styles.tab}>Tree View</button>
+          <button type="button" className={styles.tab}>Mind Map</button>
+          <button type="button" className={styles.tab}>Gantt Chart</button>
+        </div>
+
+        <KanbanBoard onSelectCard={setSelectedCardId} />
       </div>
 
       {/* Right Sidebar - Chat */}
@@ -417,6 +432,13 @@ export function BoardWorkspace({ boardId }: Props) {
       {showHistory ? (
         <HistoryModal boardId={board.id} onClose={() => setShowHistory(false)} />
       ) : null}
+
+      {/* Slide-out Card Detail Right Panel */}
+      <AnimatePresence>
+        {selectedCardId && (
+          <CardDetailPanel cardId={selectedCardId} onClose={() => setSelectedCardId(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

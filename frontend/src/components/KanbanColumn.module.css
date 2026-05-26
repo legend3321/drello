@@ -1,116 +1,157 @@
 .column {
   flex: 0 0 280px;
-  background: #1e293b;
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid #1e293b;
   border-radius: 12px;
-  padding: 0.75rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 7rem);
+  max-height: calc(100vh - 12rem);
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.2);
 }
 
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.35rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
 }
 
-.pill {
+.headerTitleArea {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex: 1;
   min-width: 0;
-  background: #334155;
-  border-radius: 999px;
-  padding: 0.35rem 0.75rem;
 }
 
-.pillTitle {
+.columnIcon {
+  flex-shrink: 0;
+}
+
+.columnTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
   margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #f8fafc;
   flex: 1;
   min-width: 0;
 }
 
-.deleteColumn {
+.count {
+  font-size: 0.775rem;
+  color: #475569;
+  font-weight: 600;
   flex-shrink: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.actionBtn {
   background: transparent;
   border: none;
-  color: #94a3b8;
-  font-size: 1.25rem;
-  line-height: 1;
+  color: #475569;
   cursor: pointer;
-  padding: 0.15rem 0.35rem;
+  padding: 0.25rem;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
 }
 
-.deleteColumn:hover {
-  background: #7f1d1d;
+.actionBtn:hover {
   color: #fff;
-}
-
-.count {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  background: #334155;
-  border-radius: 999px;
-  padding: 0.15rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .cards {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  min-height: 120px;
+  gap: 0.75rem;
+  min-height: 80px;
   overflow-y: auto;
   flex: 1;
   border-radius: 8px;
+  padding-right: 2px;
   transition: background 0.15s ease;
 }
 
 .over {
-  background: rgba(59, 130, 246, 0.12);
+  background: rgba(59, 130, 246, 0.05);
 }
 
+/* Card Addition Form */
 .addCard {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 0.75rem;
 }
 
 .addInput {
-  border: 1px solid #334155;
+  border: 1px solid #1e293b;
   border-radius: 6px;
-  padding: 0.45rem 0.55rem;
-  background: #0f172a;
+  padding: 0.5rem;
+  background: #090d16;
   color: #f1f5f9;
-  font-size: 0.8rem;
+  font-size: 0.825rem;
+  outline: none;
+  resize: none;
 }
 
 .addInput:focus {
-  outline: 2px solid #3b82f6;
+  border-color: #3b82f6;
 }
 
-.addBtn {
-  background: transparent;
-  border: 1px solid #475569;
-  color: #cbd5e1;
+.addFormActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.saveCardBtn {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
   border-radius: 6px;
-  padding: 0.35rem;
-  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.775rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s;
 }
 
-.addBtn:disabled {
-  opacity: 0.4;
+.saveCardBtn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.addBtn:hover:not(:disabled) {
-  background: #334155;
+.saveCardBtn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.cancelCardBtn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.775rem;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+}
+
+.cancelCardBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.03);
 }
