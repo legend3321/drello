@@ -16,6 +16,21 @@ class MeView(APIView):
     def get(self, request):
         return Response(UserSerializer(request.user).data)
 
+    def patch(self, request):
+        user = request.user
+        email = request.data.get("email")
+        if email is not None:
+            user.email = email
+            user.save()
+        avatar_emoji = request.data.get("avatar_emoji")
+        if avatar_emoji is not None:
+            from .models import UserProfile
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.avatar_emoji = avatar_emoji
+            profile.save()
+        return Response(UserSerializer(user).data)
+
+
 
 class UserSearchView(APIView):
     permission_classes = [permissions.IsAuthenticated]

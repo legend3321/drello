@@ -114,9 +114,11 @@ class BoardViewSet(viewsets.ModelViewSet):
         payload = [{
             "id": msg.id,
             "username": msg.user.username,
+            "avatar_emoji": getattr(getattr(msg.user, "profile", None), "avatar_emoji", "😀"),
             "text": msg.text,
             "created_at": msg.created_at.isoformat()
         } for msg in messages]
+
         return Response(payload)
 
 

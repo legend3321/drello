@@ -27,11 +27,13 @@ export interface Board {
   team_name?: string | null;
   owner_username?: string;
   owner_email?: string;
+  owner_avatar_emoji?: string;
   permissions?: {
     can_edit: boolean;
     can_delete: boolean;
   };
 }
+
 
 export interface BoardSummary {
   id: number;
@@ -58,6 +60,7 @@ export interface Comment {
   id: number;
   card: number;
   username: string;
+  avatar_emoji?: string;
   text: string;
   created_at: string;
   updated_at: string;
@@ -75,7 +78,9 @@ export interface ActivityLog {
 export interface BoardChatMessage {
   id: number;
   username: string;
+  avatar_emoji?: string;
   text: string;
   created_at: string;
 }
+
 

@@ -85,11 +85,13 @@ class BoardConsumer(AsyncWebsocketConsumer):
                     "payload": {
                         "id": msg.id,
                         "username": msg.user.username,
+                        "avatar_emoji": getattr(getattr(msg.user, "profile", None), "avatar_emoji", "😀"),
                         "text": msg.text,
                         "created_at": msg.created_at.isoformat(),
                     },
                 },
             )
+
 
     async def board_event(self, event):
         await self.send(

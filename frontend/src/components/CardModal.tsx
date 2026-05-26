@@ -7,7 +7,9 @@ import { useBoardStore } from "@/store/boardStore";
 import type { ActivityLog, Card, Comment } from "@/types/board";
 
 import { InlineEdit } from "./InlineEdit";
+import { EmojiAvatar } from "./EmojiAvatar";
 import styles from "./CardModal.module.css";
+
 
 type Props = {
   cardId: number;
@@ -211,15 +213,19 @@ export function CardModal({ cardId, onClose }: Props) {
                   <ul className={styles.commentList}>
                     {comments.map((comment) => (
                       <li key={comment.id} className={styles.commentItem}>
-                        <div className={styles.commentMeta}>
-                          <span className={styles.author}>@{comment.username}</span>
-                          <span className={styles.date}>
-                            {new Date(comment.created_at).toLocaleString()}
-                          </span>
+                        <EmojiAvatar emoji={comment.avatar_emoji || "😀"} username={comment.username} size={28} />
+                        <div className={styles.commentContent}>
+                          <div className={styles.commentMeta}>
+                            <span className={styles.author}>@{comment.username}</span>
+                            <span className={styles.date}>
+                              {new Date(comment.created_at).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className={styles.commentText}>{comment.text}</p>
                         </div>
-                        <p className={styles.commentText}>{comment.text}</p>
                       </li>
                     ))}
+
                   </ul>
                 )}
               </section>

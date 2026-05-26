@@ -14,7 +14,9 @@ export interface TeamMemberUser {
   id: number;
   username: string;
   email: string;
+  avatar_emoji?: string;
 }
+
 
 export interface TeamMembership {
   id: number;

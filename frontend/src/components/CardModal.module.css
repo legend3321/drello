@@ -240,12 +240,28 @@
   gap: 1rem;
 }
 
-.commentItem, .historyItem {
+.commentItem {
+  background: #131d35;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.historyItem {
   background: #131d35;
   border: 1px solid #1e293b;
   border-radius: 8px;
   padding: 0.75rem 1rem;
 }
+
+.commentContent {
+  flex: 1;
+  min-width: 0;
+}
+
 
 .commentMeta, .historyMeta {
   display: flex;

@@ -25,9 +25,11 @@ type AuthState = {
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
   refreshAccessToken: () => Promise<boolean>;
+  updateProfile: (data: { email?: string; avatar_emoji?: string }) => Promise<User>;
 };
 
 function parseApiError(body: unknown, fallback: string): string {
+
   if (!body || typeof body !== "object") return fallback;
   const record = body as Record<string, unknown>;
   if (typeof record.detail === "string") return record.detail;
@@ -145,5 +147,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     saveStoredAuth({ user: stored.user, tokens });
     set({ tokens });
     return true;
+  },
+
+  updateProfile: async (data) => {
+    const tokens = get().tokens;
+    if (!tokens) throw new Error("Not authenticated");
+
+    set({ loading: true });
+    try {
+      const response = await fetch(`${API_URL}/api/auth/me/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokens.access}`,
+        },
+        body: JSON.stringify(data),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(parseApiError(body, "Profile update failed"));
+      }
+      
+      const updatedUser = body as User;
+      saveStoredAuth({ user: updatedUser, tokens });
+      set({ user: updatedUser, loading: false });
+      return updatedUser;
+    } catch (error) {
+      set({ loading: false });
+      throw error;
+    }
   },
 }));

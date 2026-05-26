@@ -67,6 +67,8 @@ class BoardSerializer(serializers.ModelSerializer):
         data["team_name"] = instance.team.name if instance.team_id else None
         data["owner_username"] = instance.owner.username
         data["owner_email"] = instance.owner.email
+        data["owner_avatar_emoji"] = getattr(getattr(instance.owner, "profile", None), "avatar_emoji", "😀")
+
         
         request = self.context.get("request")
         user = request.user if request else None
@@ -120,11 +122,19 @@ class CardMoveSerializer(serializers.Serializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", read_only=True)
+    avatar_emoji = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ["id", "card", "username", "text", "created_at", "updated_at"]
+        fields = ["id", "card", "username", "avatar_emoji", "text", "created_at", "updated_at"]
         read_only_fields = ["id", "card", "created_at", "updated_at"]
+
+    def get_avatar_emoji(self, obj):
+        try:
+            return obj.user.profile.avatar_emoji
+        except Exception:
+            return "😀"
+
 
 
 class ActivityLogSerializer(serializers.ModelSerializer):

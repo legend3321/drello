@@ -25,7 +25,13 @@ export function AuthForm({ mode }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState(mode === "login" ? "demo12345" : "");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [avatarEmoji, setAvatarEmoji] = useState("😀");
   const [error, setError] = useState<string | null>(null);
+
+  const EMOJIS = [
+    "😀", "😎", "🚀", "🎨", "👾", "🦄", "🦊", "🍀", "🎸", "🍕",
+    "🐼", "🐯", "🐨", "🐙", "🥑", "🍩", "🏄", "🧩", "🎯", "🔮"
+  ];
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -40,6 +46,7 @@ export function AuthForm({ mode }: Props) {
           email,
           password,
           password_confirm: passwordConfirm,
+          avatar_emoji: avatarEmoji,
         });
       }
       const next = searchParams.get("next") || "/";
@@ -111,6 +118,24 @@ export function AuthForm({ mode }: Props) {
               minLength={8}
             />
           </label>
+        ) : null}
+
+        {mode === "register" ? (
+          <div className={styles.label}>
+            Choose your avatar emoji
+            <div className={styles.emojiGrid}>
+              {EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  className={`${styles.emojiBtn} ${avatarEmoji === emoji ? styles.selectedEmoji : ""}`}
+                  onClick={() => setAvatarEmoji(emoji)}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
         ) : null}
 
         <button className={styles.submit} type="submit" disabled={loading}>

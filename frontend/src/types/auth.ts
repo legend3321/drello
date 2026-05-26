@@ -2,6 +2,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  avatar_emoji?: string;
 }
 
 export interface AuthTokens {
@@ -19,4 +20,6 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   password_confirm: string;
+  avatar_emoji?: string;
 }
+

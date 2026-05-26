@@ -13,7 +13,9 @@ import { InlineEdit } from "./InlineEdit";
 import { KanbanBoard } from "./KanbanBoard";
 import { ToastStack } from "./ToastStack";
 import { HistoryModal } from "./HistoryModal";
+import { EmojiAvatar } from "./EmojiAvatar";
 import styles from "./BoardWorkspace.module.css";
+
 
 type Props = {
   boardId: number;
@@ -233,9 +235,7 @@ export function BoardWorkspace({ boardId }: Props) {
                             }`}
                             title={isOnline ? "Online" : "Offline"}
                           />
-                          <div className={styles.memberAvatar}>
-                            {m.user.username.charAt(0).toUpperCase()}
-                          </div>
+                          <EmojiAvatar emoji={m.user.avatar_emoji || "😀"} username={m.user.username} size={32} />
                           <div className={styles.memberInfo}>
                             <span className={styles.memberUsername}>@{m.user.username}</span>
                             <span className={styles.memberRoleBadge}>{m.role_level.name}</span>
@@ -260,9 +260,7 @@ export function BoardWorkspace({ boardId }: Props) {
                           }`}
                           title={isOnline ? "Online" : "Offline"}
                         />
-                        <div className={styles.memberAvatar}>
-                          {board.owner_username?.charAt(0).toUpperCase() || "O"}
-                        </div>
+                        <EmojiAvatar emoji={board.owner_avatar_emoji || "😀"} username={board.owner_username || "owner"} size={32} />
                         <div className={styles.memberInfo}>
                           <span className={styles.memberUsername}>@{board.owner_username || "owner"}</span>
                           <span className={styles.memberRoleBadge}>Owner</span>
@@ -351,17 +349,21 @@ export function BoardWorkspace({ boardId }: Props) {
               <div className={styles.chatMessagesList}>
                 {chatMessages.map((msg) => (
                   <div key={msg.id} className={styles.chatMessageItem}>
-                    <div className={styles.chatMessageHeader}>
-                      <span className={styles.chatMessageUser}>@{msg.username}</span>
-                      <span className={styles.chatMessageTime}>
-                        {new Date(msg.created_at).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
+                    <EmojiAvatar emoji={msg.avatar_emoji || "😀"} username={msg.username} size={28} />
+                    <div className={styles.chatMessageContent}>
+                      <div className={styles.chatMessageHeader}>
+                        <span className={styles.chatMessageUser}>@{msg.username}</span>
+                        <span className={styles.chatMessageTime}>
+                          {new Date(msg.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <p className={styles.chatMessageText}>{msg.text}</p>
                     </div>
-                    <p className={styles.chatMessageText}>{msg.text}</p>
                   </div>
+
                 ))}
                 <div ref={(el) => { el?.scrollIntoView({ behavior: "smooth" }); }} />
               </div>

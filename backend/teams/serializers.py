@@ -37,10 +37,19 @@ class TeamRoleLevelSerializer(serializers.ModelSerializer):
 
 
 class TeamMemberUserSerializer(serializers.ModelSerializer):
+    avatar_emoji = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ["id", "username", "email"]
+        fields = ["id", "username", "email", "avatar_emoji"]
         read_only_fields = fields
+
+    def get_avatar_emoji(self, obj):
+        try:
+            return obj.profile.avatar_emoji
+        except Exception:
+            return "😀"
+
 
 
 class TeamMembershipSerializer(serializers.ModelSerializer):

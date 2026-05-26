@@ -4,16 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuthStore } from "@/store/authStore";
+import { EmojiAvatar } from "./EmojiAvatar";
 
 import styles from "./AppHeader.module.css";
+
 
 export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
-
-  if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
-    return null;
-  }
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
@@ -21,6 +19,11 @@ export function AppHeader() {
     logout();
     router.push("/login");
   };
+
+  if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
+    return null;
+  }
+
 
   return (
     <header className={styles.header}>
@@ -47,12 +50,16 @@ export function AppHeader() {
       ) : null}
       {user ? (
         <div className={styles.actions}>
-          <span className={styles.user}>@{user.username}</span>
+          <Link href="/settings" className={styles.settingsLink} title="Settings">
+            <EmojiAvatar emoji={user.avatar_emoji || "😀"} username={user.username} size={28} />
+            <span className={styles.user}>@{user.username}</span>
+          </Link>
           <button type="button" className={styles.logout} onClick={handleLogout}>
             Log out
           </button>
         </div>
       ) : null}
+
     </header>
   );
 }
