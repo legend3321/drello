@@ -21,6 +21,7 @@ import styles from "./KanbanColumn.module.css";
 type Props = {
   list: ListColumn;
   onSelectCard: (id: number) => void;
+  onCreateCard?: (listId: number) => void;
 };
 
 function getColumnIcon(title: string) {
@@ -37,7 +38,7 @@ function getColumnIcon(title: string) {
   return <AlertTriangle size={16} className={styles.columnIcon} style={{ color: "#a855f7" }} />;
 }
 
-export function KanbanColumn({ list, onSelectCard }: Props) {
+export function KanbanColumn({ list, onSelectCard, onCreateCard }: Props) {
   const board = useBoardStore((s) => s.board);
   const canEdit = board?.permissions?.can_edit ?? false;
 
@@ -90,7 +91,13 @@ export function KanbanColumn({ list, onSelectCard }: Props) {
             <button
               type="button"
               className={styles.actionBtn}
-              onClick={() => setShowAddForm(!showAddForm)}
+              onClick={() => {
+                if (onCreateCard) {
+                  onCreateCard(list.id);
+                } else {
+                  setShowAddForm(!showAddForm);
+                }
+              }}
               title="Add card"
             >
               <Plus size={16} />

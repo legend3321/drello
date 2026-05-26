@@ -10,6 +10,39 @@
   box-sizing: border-box;
 }
 
+:root,
+html.dark {
+  --bg-app: #080d16;
+  --bg-panel: #0c121e;
+  --bg-sidebar: #0b121f;
+  --bg-sidebar-bottom: #090d16;
+  --bg-card: #0f172a;
+  --bg-input: #111827;
+  --border-color: #1e293b;
+  --border-color-light: #334155;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --bg-hover: rgba(255, 255, 255, 0.05);
+}
+
+html.light {
+  --bg-app: #f8fafc;
+  --bg-panel: #ffffff;
+  --bg-sidebar: #f1f5f9;
+  --bg-sidebar-bottom: #e2e8f0;
+  --bg-card: #ffffff;
+  --bg-input: #f8fafc;
+  --border-color: #e2e8f0;
+  --border-color-light: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #64748b;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --bg-hover: rgba(0, 0, 0, 0.05);
+}
+
 html,
 body {
   margin: 0;
@@ -22,9 +55,10 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  background: #080d16;
-  color: #f1f5f9;
+  background: var(--bg-app);
+  color: var(--text-main);
   overflow-x: hidden;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 /* Custom Scrollbars */

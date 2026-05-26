@@ -5,12 +5,8 @@ import { motion } from "framer-motion";
 import { 
   X, 
   Calendar, 
-  ChevronUp, 
-  ChevronsUp, 
-  ChevronDown, 
   Plus, 
   Trash2, 
-  MessageSquare,
   Tag, 
   Paperclip, 
   UserPlus, 
@@ -27,14 +23,16 @@ import { InlineEdit } from "./InlineEdit";
 import styles from "./CardDetailPanel.module.css";
 
 type Props = {
-  cardId: number;
+  cardId?: number;
+  listId?: number;
+  isCreate?: boolean;
   onClose: () => void;
 };
 
 // Available mockup label colors
 const LABEL_COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#db2777", "#a855f7", "#ef4444"];
 
-export function CardDetailPanel({ cardId, onClose }: Props) {
+export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: Props) {
   const board = useBoardStore((s) => s.board);
   const applyRemoteCard = useBoardStore((s) => s.applyRemoteCard);
   const updateCardTitle = useBoardStore((s) => s.updateCardTitle);
@@ -46,6 +44,7 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
 
   const canEdit = board?.permissions?.can_edit ?? false;
 
+  // Local state for editing description
   const [descriptionDraft, setDescriptionDraft] = useState("");
   const [descriptionEditing, setDescriptionEditing] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMembership[]>([]);
@@ -57,6 +56,17 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
   const [addingLabel, setAddingLabel] = useState(false);
   const [newLabelText, setNewLabelText] = useState("");
   const [newLabelColor, setNewLabelColor] = useState("#3b82f6");
+
+  // Create Mode States
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState<"highest" | "medium" | "low">("medium");
+  const [storyPoints, setStoryPoints] = useState<number>(0);
+  const [labels, setLabels] = useState<{ text: string; color: string }[]>([]);
+  const [checklist, setChecklist] = useState<{ id: string; text: string; done: boolean }[]>([]);
+  const [attachments, setAttachments] = useState<{ id: string; name: string; url: string }[]>([]);
+  const [assignedUsers, setAssignedUsers] = useState<{ id: number; username: string; email: string; avatar_emoji?: string }[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
   // Load team members on mount
   useEffect(() => {
@@ -74,9 +84,21 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
     }
   }, [cardId, card?.description]);
 
-  if (!card) return null;
+  // Getters resolving between Create and Edit modes
+  const currentTitle = isCreate ? title : (card?.title || "");
+  const currentDescription = isCreate ? description : (card?.description || "");
+  const currentPriority = isCreate ? priority : (card?.priority || "medium");
+  const currentStoryPoints = isCreate ? storyPoints : (card?.story_points || 0);
+  const currentLabels = isCreate ? labels : (card?.labels || []);
+  const currentChecklist = isCreate ? checklist : (card?.checklist || []);
+  const currentAttachments = isCreate ? attachments : (card?.attachments || []);
+  const currentAssignedUsers = isCreate ? assignedUsers : (card?.assigned_users || []);
 
+  if (!isCreate && !card) return null;
+
+  // Actions routing
   const handleUpdate = async (patch: Partial<Card> & { assigned_user_ids?: number[] }) => {
+    if (!cardId) return;
     try {
       const updated = await api.updateCard(cardId, patch);
       applyRemoteCard(updated);
@@ -85,78 +107,201 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
     }
   };
 
-  const handleSaveDescription = async () => {
-    await handleUpdate({ description: descriptionDraft });
-    setDescriptionEditing(false);
+  const handleTitleSave = (newTitle: string) => {
+    if (isCreate) {
+      setTitle(newTitle);
+    } else if (card) {
+      void updateCardTitle(card.id, newTitle);
+    }
+  };
+
+  const handleSaveDescription = () => {
+    if (isCreate) {
+      setDescription(descriptionDraft);
+      setDescriptionEditing(false);
+    } else {
+      void handleUpdate({ description: descriptionDraft });
+      setDescriptionEditing(false);
+    }
+  };
+
+  const handlePriorityChange = (newVal: "highest" | "medium" | "low") => {
+    if (isCreate) {
+      setPriority(newVal);
+    } else {
+      void handleUpdate({ priority: newVal });
+    }
+  };
+
+  const handleStoryPointsChange = (newVal: number) => {
+    if (isCreate) {
+      setStoryPoints(newVal);
+    } else {
+      void handleUpdate({ story_points: newVal });
+    }
   };
 
   // Checklist Actions
-  const toggleChecklistItem = (itemId: string) => {
-    const nextList = (card.checklist || []).map((item) => 
-      item.id === itemId ? { ...item, done: !item.done } : item
-    );
-    void handleUpdate({ checklist: nextList });
+  const handleToggleChecklistItem = (itemId: string) => {
+    if (isCreate) {
+      setChecklist(prev => prev.map(item => item.id === itemId ? { ...item, done: !item.done } : item));
+    } else if (card) {
+      const nextList = (card.checklist || []).map((item) => 
+        item.id === itemId ? { ...item, done: !item.done } : item
+      );
+      void handleUpdate({ checklist: nextList });
+    }
   };
 
-  const deleteChecklistItem = (itemId: string) => {
-    const nextList = (card.checklist || []).filter((item) => item.id !== itemId);
-    void handleUpdate({ checklist: nextList });
+  const handleDeleteChecklistItem = (itemId: string) => {
+    if (isCreate) {
+      setChecklist(prev => prev.filter(item => item.id !== itemId));
+    } else if (card) {
+      const nextList = (card.checklist || []).filter((item) => item.id !== itemId);
+      void handleUpdate({ checklist: nextList });
+    }
+  };
+
+  const handleAddChecklistItem = (text: string) => {
+    const newItem = { id: String(Date.now()), text, done: false };
+    if (isCreate) {
+      setChecklist(prev => [...prev, newItem]);
+    } else if (card) {
+      const nextList = [...(card.checklist || []), newItem];
+      void handleUpdate({ checklist: nextList });
+    }
   };
 
   const addChecklistItem = (e: FormEvent) => {
     e.preventDefault();
     const text = newChecklistText.trim();
     if (!text) return;
-    const newItem = { id: String(Date.now()), text, done: false };
-    const nextList = [...(card.checklist || []), newItem];
-    void handleUpdate({ checklist: nextList }).then(() => setNewChecklistText(""));
+    handleAddChecklistItem(text);
+    setNewChecklistText("");
   };
 
   // Label Actions
+  const handleAddLabel = (text: string, color: string) => {
+    const newLabel = { text, color };
+    if (isCreate) {
+      setLabels(prev => [...prev, newLabel]);
+    } else if (card) {
+      const nextList = [...(card.labels || []), newLabel];
+      void handleUpdate({ labels: nextList });
+    }
+  };
+
   const addLabel = (e: FormEvent) => {
     e.preventDefault();
     const text = newLabelText.trim();
     if (!text) return;
-    const nextList = [...(card.labels || []), { text, color: newLabelColor }];
-    void handleUpdate({ labels: nextList }).then(() => {
-      setNewLabelText("");
-      setAddingLabel(false);
-    });
+    handleAddLabel(text, newLabelColor);
+    setNewLabelText("");
+    setAddingLabel(false);
   };
 
-  const deleteLabel = (text: string) => {
-    const nextList = (card.labels || []).filter((label) => label.text !== text);
-    void handleUpdate({ labels: nextList });
+  const handleDeleteLabel = (text: string) => {
+    if (isCreate) {
+      setLabels(prev => prev.filter(l => l.text !== text));
+    } else if (card) {
+      const nextList = (card.labels || []).filter((label) => label.text !== text);
+      void handleUpdate({ labels: nextList });
+    }
   };
 
   // Assigned Users Actions
-  const assignUser = (userId: number) => {
-    const ids = (card.assigned_users || []).map((u) => u.id);
-    if (ids.includes(userId)) return;
-    void handleUpdate({ assigned_user_ids: [...ids, userId] });
+  const handleAssignUser = (userId: number) => {
+    const match = teamMembers.find(tm => tm.user.id === userId);
+    if (!match) return;
+    const userObj = {
+      id: match.user.id,
+      username: match.user.username,
+      email: match.user.email,
+      avatar_emoji: match.user.avatar_emoji
+    };
+    if (isCreate) {
+      if (!assignedUsers.some(u => u.id === userId)) {
+        setAssignedUsers(prev => [...prev, userObj]);
+      }
+    } else if (card) {
+      const ids = (card.assigned_users || []).map((u) => u.id);
+      if (ids.includes(userId)) return;
+      void handleUpdate({ assigned_user_ids: [...ids, userId] });
+    }
   };
 
-  const unassignUser = (userId: number) => {
-    const ids = (card.assigned_users || []).map((u) => u.id).filter((id) => id !== userId);
-    void handleUpdate({ assigned_user_ids: ids });
+  const handleUnassignUser = (userId: number) => {
+    if (isCreate) {
+      setAssignedUsers(prev => prev.filter(u => u.id !== userId));
+    } else if (card) {
+      const ids = (card.assigned_users || []).map((u) => u.id).filter((id) => id !== userId);
+      void handleUpdate({ assigned_user_ids: ids });
+    }
   };
 
   // Attachments Actions
-  const addAttachment = () => {
+  const handleAddAttachment = () => {
     const mockImages = [
       { name: "inception_flow.png", url: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=128&auto=format&fit=crop&q=60" },
       { name: "brand_colors.png", url: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=128&auto=format&fit=crop&q=60" },
       { name: "user_journey.png", url: "https://images.unsplash.com/photo-1541462608143-67571c6738dd?w=128&auto=format&fit=crop&q=60" }
     ];
-    const pick = mockImages[(card.attachments || []).length % mockImages.length];
+    const count = isCreate ? attachments.length : (card?.attachments || []).length;
+    const pick = mockImages[count % mockImages.length];
     const newItem = { id: String(Date.now()), name: pick.name, url: pick.url };
-    const nextList = [...(card.attachments || []), newItem];
-    void handleUpdate({ attachments: nextList });
+    if (isCreate) {
+      setAttachments(prev => [...prev, newItem]);
+    } else if (card) {
+      const nextList = [...(card.attachments || []), newItem];
+      void handleUpdate({ attachments: nextList });
+    }
   };
 
-  const removeAttachment = (attId: string) => {
-    const nextList = (card.attachments || []).filter((att) => att.id !== attId);
-    void handleUpdate({ attachments: nextList });
+  const handleRemoveAttachment = (attId: string) => {
+    if (isCreate) {
+      setAttachments(prev => prev.filter(att => att.id !== attId));
+    } else if (card) {
+      const nextList = (card.attachments || []).filter((att) => att.id !== attId);
+      void handleUpdate({ attachments: nextList });
+    }
+  };
+
+  // Creation Submit
+  const handleCreateCard = async () => {
+    if (!listId || !title.trim()) return;
+    setSubmitting(true);
+    try {
+      const newCard = await api.createCard(listId, title.trim(), description);
+      
+      const hasPatches = 
+        priority !== "medium" || 
+        storyPoints !== 0 || 
+        labels.length > 0 || 
+        checklist.length > 0 || 
+        attachments.length > 0 || 
+        assignedUsers.length > 0;
+      
+      if (hasPatches) {
+        const patchData = {
+          priority,
+          story_points: storyPoints,
+          labels,
+          checklist,
+          attachments,
+          assigned_user_ids: assignedUsers.map(u => u.id)
+        };
+        const updated = await api.updateCard(newCard.id, patchData);
+        applyRemoteCard(updated);
+      } else {
+        applyRemoteCard(newCard);
+      }
+      addToast("Task created successfully", "success");
+      onClose();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : "Failed to create task", "error");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -178,15 +323,26 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
         <header className={styles.header}>
           <div className={styles.titleRow}>
             <div className={styles.titleArea}>
-              <InlineEdit
-                as="heading"
-                value={card.title}
-                onSave={(title) => updateCardTitle(card.id, title)}
-                className={styles.title}
-                disabled={!canEdit}
-              />
+              {isCreate ? (
+                <input
+                  type="text"
+                  placeholder="Task title..."
+                  value={title}
+                  onChange={(e) => handleTitleSave(e.target.value)}
+                  className={styles.titleInput}
+                  autoFocus
+                />
+              ) : (
+                <InlineEdit
+                  as="heading"
+                  value={currentTitle}
+                  onSave={handleTitleSave}
+                  className={styles.title}
+                  disabled={!canEdit}
+                />
+              )}
               <div className={styles.subtitle}>
-                in column <strong>{board?.lists.find((l) => l.id === card.list_id)?.title}</strong>
+                in column <strong>{board?.lists.find((l) => l.id === (isCreate ? listId : card?.list_id))?.title}</strong>
               </div>
             </div>
             <button 
@@ -206,18 +362,20 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
               <span className={styles.metaValue}>
                 <Calendar size={14} style={{ color: "#64748b" }} />
                 <span>
-                  {new Date(card.created_at).toLocaleDateString([], { month: "short", day: "2-digit" })}
+                  {isCreate 
+                    ? new Date().toLocaleDateString([], { month: "short", day: "2-digit" })
+                    : new Date(card!.created_at).toLocaleDateString([], { month: "short", day: "2-digit" })}
                 </span>
               </span>
             </div>
 
             <div className={styles.metaBlock}>
               <span className={styles.metaLabel}>Priority</span>
-              {canEdit ? (
+              {canEdit || isCreate ? (
                 <select
                   className={styles.selectInput}
-                  value={card.priority || "medium"}
-                  onChange={(e) => void handleUpdate({ priority: e.target.value as any })}
+                  value={currentPriority}
+                  onChange={(e) => handlePriorityChange(e.target.value as any)}
                 >
                   <option value="highest">Highest</option>
                   <option value="medium">Medium</option>
@@ -225,35 +383,25 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                 </select>
               ) : (
                 <span className={styles.metaValue} style={{ textTransform: "capitalize" }}>
-                  {card.priority || "medium"}
+                  {currentPriority}
                 </span>
               )}
             </div>
 
             <div className={styles.metaBlock}>
               <span className={styles.metaLabel}>Story Points</span>
-              {canEdit ? (
+              {canEdit || isCreate ? (
                 <input
                   type="number"
                   min="0"
                   className={styles.pointsInput}
-                  value={card.story_points ?? 0}
-                  onChange={(e) => void handleUpdate({ story_points: Number(e.target.value) })}
+                  value={currentStoryPoints}
+                  onChange={(e) => handleStoryPointsChange(Number(e.target.value))}
                 />
               ) : (
-                <span className={styles.metaValue}>{card.story_points ?? 0}</span>
+                <span className={styles.metaValue}>{currentStoryPoints}</span>
               )}
             </div>
-          </div>
-
-          {/* Quick Actions Row */}
-          <div className={styles.actionsRow}>
-            <button type="button" className={styles.actionBadgeBtn}>
-              <Plus size={12} /> Add child issue
-            </button>
-            <button type="button" className={styles.actionBadgeBtn}>
-              <Paperclip size={12} /> Link issue
-            </button>
           </div>
         </header>
 
@@ -275,9 +423,9 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                   onChange={(e) => setDescriptionDraft(e.target.value)}
                   placeholder="Add a more detailed description…"
                   rows={4}
-                  disabled={!canEdit}
+                  disabled={!canEdit && !isCreate}
                 />
-                {canEdit && (
+                {(canEdit || isCreate) && (
                   <div className={styles.editControls}>
                     <button type="button" className={styles.saveBtn} onClick={handleSaveDescription}>
                       Save
@@ -286,7 +434,7 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                       type="button"
                       className={styles.cancelBtn}
                       onClick={() => {
-                        setDescriptionDraft(card.description || "");
+                        setDescriptionDraft(currentDescription);
                         setDescriptionEditing(false);
                       }}
                     >
@@ -298,13 +446,13 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
             ) : (
               <div
                 className={styles.descriptionDisplay}
-                onClick={() => canEdit && setDescriptionEditing(true)}
+                onClick={() => (canEdit || isCreate) && setDescriptionEditing(true)}
               >
-                {card.description ? (
-                  <p style={{ margin: 0 }}>{card.description}</p>
+                {currentDescription ? (
+                  <p style={{ margin: 0 }}>{currentDescription}</p>
                 ) : (
                   <p className={styles.placeholderText}>
-                    {canEdit ? "Add a more detailed description…" : "No description provided."}
+                    {(canEdit || isCreate) ? "Add a more detailed description…" : "No description provided."}
                   </p>
                 )}
               </div>
@@ -318,17 +466,17 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
               <h3>Labels</h3>
             </div>
             <div className={styles.labelsList}>
-              {card.labels && card.labels.map((label, i) => (
+              {currentLabels.map((label, i) => (
                 <span 
                   key={i} 
                   className={styles.labelBadge}
                   style={{ background: `${label.color}20`, color: label.color, border: `1px solid ${label.color}35` }}
                 >
                   {label.text}
-                  {canEdit && (
+                  {(canEdit || isCreate) && (
                     <span 
                       className={styles.labelDelete}
-                      onClick={(e) => { e.stopPropagation(); deleteLabel(label.text); }}
+                      onClick={(e) => { e.stopPropagation(); handleDeleteLabel(label.text); }}
                     >
                       &times;
                     </span>
@@ -336,7 +484,7 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                 </span>
               ))}
 
-              {canEdit && !addingLabel && (
+              {(canEdit || isCreate) && !addingLabel && (
                 <button 
                   type="button" 
                   className={styles.actionBadgeBtn}
@@ -384,7 +532,7 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
               <h3>Assigned Members</h3>
             </div>
             <div className={styles.membersList}>
-              {card.assigned_users && card.assigned_users.map((u) => (
+              {currentAssignedUsers.map((u) => (
                 <div key={u.id} className={styles.memberPill}>
                   <EmojiAvatar emoji={u.avatar_emoji || "😀"} username={u.username} size={24} />
                   <div className={styles.memberPillInfo}>
@@ -393,11 +541,11 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                       {u.id === board?.owner_id ? "Owner" : "Member"}
                     </span>
                   </div>
-                  {canEdit && (
+                  {(canEdit || isCreate) && (
                     <button 
                       type="button" 
                       className={styles.removeMemberBtn}
-                      onClick={() => unassignUser(u.id)}
+                      onClick={() => handleUnassignUser(u.id)}
                       title="Unassign user"
                     >
                       &times;
@@ -406,20 +554,20 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                 </div>
               ))}
 
-              {canEdit && board?.team_id && (
+              {(canEdit || isCreate) && board?.team_id && (
                 <div className={styles.addMemberContainer}>
                   <select
                     className={styles.addMemberSelect}
                     value=""
                     onChange={(e) => {
                       if (e.target.value) {
-                        assignUser(Number(e.target.value));
+                        handleAssignUser(Number(e.target.value));
                       }
                     }}
                   >
                     <option value="">+ Assign Member</option>
                     {teamMembers
-                      .filter((tm) => !(card.assigned_users || []).some((u) => u.id === tm.user.id))
+                      .filter((tm) => !currentAssignedUsers.some((u) => u.id === tm.user.id))
                       .map((tm) => (
                         <option key={tm.user.id} value={tm.user.id}>
                           @{tm.user.username}
@@ -435,21 +583,21 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
           <section className={styles.section}>
             <div className={styles.sectionTitleRow}>
               <Paperclip size={16} className={styles.sectionIcon} />
-              <h3>Attachments ({card.attachments?.length || 0})</h3>
+              <h3>Attachments ({currentAttachments.length})</h3>
             </div>
             <div className={styles.attachmentsGrid}>
-              {card.attachments && card.attachments.map((att) => (
+              {currentAttachments.map((att) => (
                 <div 
                   key={att.id} 
                   className={styles.attachmentThumb} 
                   style={{ backgroundImage: `url(${att.url})` }}
                   title={att.name}
                 >
-                  {canEdit && (
+                  {(canEdit || isCreate) && (
                     <button 
                       type="button" 
                       className={styles.removeAttachmentBtn}
-                      onClick={() => removeAttachment(att.id)}
+                      onClick={() => handleRemoveAttachment(att.id)}
                       title="Remove attachment"
                     >
                       &times;
@@ -458,11 +606,11 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                 </div>
               ))}
               
-              {canEdit && (
+              {(canEdit || isCreate) && (
                 <button 
                   type="button" 
                   className={styles.addAttachmentBtn}
-                  onClick={addAttachment}
+                  onClick={handleAddAttachment}
                   title="Mock Add Attachment"
                 >
                   <Plus size={16} />
@@ -479,34 +627,37 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
               <h3>To do lists</h3>
             </div>
             <div className={styles.checklistContainer}>
-              {card.checklist && card.checklist.map((item) => (
+              {currentChecklist.map((item) => (
                 <div key={item.id} className={styles.checklistItem}>
                   <input
                     type="checkbox"
                     checked={item.done}
-                    onChange={() => toggleChecklistItem(item.id)}
+                    onChange={() => handleToggleChecklistItem(item.id)}
                     className={styles.checklistCheckbox}
-                    disabled={!canEdit}
+                    disabled={!canEdit && !isCreate}
                   />
                   <input
                     type="text"
                     value={item.text}
                     onChange={(e) => {
-                      if (!canEdit) return;
                       const val = e.target.value;
-                      const next = (card.checklist || []).map((c) => 
-                        c.id === item.id ? { ...c, text: val } : c
-                      );
-                      void handleUpdate({ checklist: next });
+                      if (isCreate) {
+                        setChecklist(prev => prev.map(c => c.id === item.id ? { ...c, text: val } : c));
+                      } else {
+                        const next = (card!.checklist || []).map((c) => 
+                          c.id === item.id ? { ...c, text: val } : c
+                        );
+                        void handleUpdate({ checklist: next });
+                      }
                     }}
                     className={`${styles.checklistItemText} ${item.done ? styles.checklistItemTextDone : ""}`}
-                    disabled={!canEdit}
+                    disabled={!canEdit && !isCreate}
                   />
-                  {canEdit && (
+                  {(canEdit || isCreate) && (
                     <button
                       type="button"
                       className={styles.deleteChecklistItemBtn}
-                      onClick={() => deleteChecklistItem(item.id)}
+                      onClick={() => handleDeleteChecklistItem(item.id)}
                       title="Delete subtask"
                     >
                       <Trash2 size={13} />
@@ -515,11 +666,11 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
                 </div>
               ))}
 
-              {card.checklist && card.checklist.length === 0 && (
+              {currentChecklist.length === 0 && (
                 <p className={styles.noItemsHint}>No tasks added yet.</p>
               )}
 
-              {canEdit && (
+              {(canEdit || isCreate) && (
                 <form onSubmit={addChecklistItem} className={styles.addChecklistItemForm}>
                   <input
                     className={styles.addChecklistItemInput}
@@ -537,6 +688,27 @@ export function CardDetailPanel({ cardId, onClose }: Props) {
           </section>
 
         </main>
+
+        {isCreate && (
+          <footer className={styles.footer}>
+            <button
+              type="button"
+              className={styles.createBtn}
+              onClick={handleCreateCard}
+              disabled={submitting || !title.trim()}
+            >
+              {submitting ? "Creating…" : "Create Task"}
+            </button>
+            <button
+              type="button"
+              className={styles.cancelCreateBtn}
+              onClick={onClose}
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+          </footer>
+        )}
       </motion.div>
     </>
   );
