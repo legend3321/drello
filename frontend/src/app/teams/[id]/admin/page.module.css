@@ -296,3 +296,59 @@
   color: #fff;
 }
 
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 1rem;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 1.5rem 1rem 2rem;
+  }
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  .addMember {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .autocompleteContainer,
+  .addMember select,
+  .addMember button {
+    width: 100%;
+  }
+  .inviteGenerator {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .inviteGenerator select,
+  .generateBtn {
+    width: 100%;
+  }
+  .inviteResult {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .copyBtn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .hierarchyItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+  .perms {
+    flex: none;
+    width: 100%;
+  }
+}
+
+

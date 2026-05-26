@@ -283,60 +283,63 @@ export default function TeamAdminDashboardPage() {
               <button type="submit">Add member</button>
             </form>
 
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Role</th>
-                  <th>Joined</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {members.map((member) => {
-                  const levels = assignableLevels(member);
-                  const canEdit =
-                    permissions.can_manage_members &&
-                    member.role_level.rank > (team.my_role?.rank ?? 999);
-                  return (
-                    <tr key={member.id}>
-                      <td>@{member.user.username}</td>
-                      <td>
-                        {canEdit && levels.length > 0 ? (
-                          <select
-                            className={styles.roleSelect}
-                            value={member.role_level.id}
-                            onChange={(e) =>
-                              void changeMemberRole(member, Number(e.target.value))
-                            }
-                          >
-                            {levels.map((level) => (
-                              <option key={level.id} value={level.id}>
-                                {level.name}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          member.role_level.name
-                        )}
-                      </td>
-                      <td>{new Date(member.joined_at).toLocaleDateString()}</td>
-                      <td>
-                        {canEdit ? (
-                          <button
-                            type="button"
-                            className={styles.dangerBtn}
-                            onClick={() => void removeMember(member)}
-                          >
-                            Remove
-                          </button>
-                        ) : null}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {members.map((member) => {
+                    const levels = assignableLevels(member);
+                    const canEdit =
+                      permissions.can_manage_members &&
+                      member.role_level.rank > (team.my_role?.rank ?? 999);
+                    return (
+                      <tr key={member.id}>
+                        <td>@{member.user.username}</td>
+                        <td>
+                          {canEdit && levels.length > 0 ? (
+                            <select
+                              className={styles.roleSelect}
+                              value={member.role_level.id}
+                              onChange={(e) =>
+                                void changeMemberRole(member, Number(e.target.value))
+                              }
+                            >
+                              {levels.map((level) => (
+                                <option key={level.id} value={level.id}>
+                                  {level.name}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            member.role_level.name
+                          )}
+                        </td>
+                        <td>{new Date(member.joined_at).toLocaleDateString()}</td>
+                        <td>
+                          {canEdit ? (
+                            <button
+                              type="button"
+                              className={styles.dangerBtn}
+                              onClick={() => void removeMember(member)}
+                            >
+                              Remove
+                            </button>
+                          ) : null}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
           </section>
 
           <section className={styles.section}>

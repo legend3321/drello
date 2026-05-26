@@ -137,3 +137,33 @@
   border-radius: 4px;
   font-size: 0.85em;
 }
+
+@media (max-width: 640px) {
+  .main {
+    padding: 2rem 1rem;
+  }
+  .createForm {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .createInput,
+  .teamSelect,
+  .createBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .boardItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .deleteBtn {
+    align-self: flex-end;
+  }
+  .boardLink {
+    align-self: flex-start;
+  }
+}
+

@@ -141,6 +141,28 @@ export function BoardWorkspace({ boardId }: Props) {
     void fetchChatHistory();
   }, [boardId]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setShowMembersSidebar(false);
+      setShowChatSidebar(false);
+    }
+  }, []);
+
+  const openMembersSidebar = () => {
+    setShowMembersSidebar(true);
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setShowChatSidebar(false);
+    }
+  };
+
+  const openChatSidebar = () => {
+    setShowChatSidebar(true);
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setShowMembersSidebar(false);
+    }
+  };
+
+
   const sendChatMessage = (e: React.FormEvent) => {
     e.preventDefault();
     const text = chatInput.trim();
@@ -271,7 +293,7 @@ export function BoardWorkspace({ boardId }: Props) {
                 <button
                   type="button"
                   className={styles.membersToggleBtn}
-                  onClick={() => setShowMembersSidebar(true)}
+                  onClick={openMembersSidebar}
                 >
                   👥 Members
                 </button>
@@ -280,7 +302,7 @@ export function BoardWorkspace({ boardId }: Props) {
                 <button
                   type="button"
                   className={styles.chatToggleBtn}
-                  onClick={() => setShowChatSidebar(true)}
+                  onClick={openChatSidebar}
                 >
                   💬 Chat
                 </button>
