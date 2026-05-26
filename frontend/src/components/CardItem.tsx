@@ -8,6 +8,7 @@ import type { Card } from "@/types/board";
 
 import { InlineEdit } from "./InlineEdit";
 import { CardModal } from "./CardModal";
+import { AnimatePresence } from "framer-motion";
 import styles from "./CardItem.module.css";
 
 type Props = {
@@ -84,9 +85,11 @@ export function CardItem({ card, index }: Props) {
           </article>
         )}
       </Draggable>
-      {showModal ? (
-        <CardModal cardId={card.id} onClose={() => setShowModal(false)} />
-      ) : null}
+      <AnimatePresence>
+        {showModal ? (
+          <CardModal cardId={card.id} onClose={() => setShowModal(false)} />
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

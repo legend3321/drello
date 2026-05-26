@@ -14,6 +14,7 @@ import { KanbanBoard } from "./KanbanBoard";
 import { ToastStack } from "./ToastStack";
 import { HistoryModal } from "./HistoryModal";
 import { EmojiAvatar } from "./EmojiAvatar";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "./BoardWorkspace.module.css";
 
 
@@ -201,79 +202,88 @@ export function BoardWorkspace({ boardId }: Props) {
   return (
     <div className={styles.workspaceLayout}>
       {/* Left Sidebar - Board Members */}
-      {showMembersSidebar && (
-        <aside className={styles.leftSidebar}>
-          <div className={styles.sidebarHeader}>
-            <h3>Board Members</h3>
-            <button
-              type="button"
-              className={styles.closeSidebarBtn}
-              onClick={() => setShowMembersSidebar(false)}
-              title="Close sidebar"
-            >
-              ×
-            </button>
-          </div>
-          
-          <div className={styles.sidebarContent}>
-            {board.team_id ? (
-              <>
-                <p className={styles.sidebarSub}>
-                  Team: <strong>{board.team_name}</strong>
-                </p>
-                {loadingMembers ? (
-                  <p className={styles.sidebarLoading}>Loading members…</p>
-                ) : (
+      <AnimatePresence>
+        {showMembersSidebar && (
+          <motion.aside
+            key="members-sidebar"
+            initial={{ x: -300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -300, opacity: 0 }}
+            transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
+            className={styles.leftSidebar}
+          >
+            <div className={styles.sidebarHeader}>
+              <h3>Board Members</h3>
+              <button
+                type="button"
+                className={styles.closeSidebarBtn}
+                onClick={() => setShowMembersSidebar(false)}
+                title="Close sidebar"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className={styles.sidebarContent}>
+              {board.team_id ? (
+                <>
+                  <p className={styles.sidebarSub}>
+                    Team: <strong>{board.team_name}</strong>
+                  </p>
+                  {loadingMembers ? (
+                    <p className={styles.sidebarLoading}>Loading members…</p>
+                  ) : (
+                    <ul className={styles.memberList}>
+                      {members.map((m) => {
+                        const isOnline = onlineUsers.includes(m.user.username);
+                        return (
+                          <li key={m.id} className={styles.memberItem}>
+                            <span
+                              className={`${styles.statusIndicator} ${
+                                isOnline ? styles.onlineIndicator : styles.offlineIndicator
+                              }`}
+                              title={isOnline ? "Online" : "Offline"}
+                            />
+                            <EmojiAvatar emoji={m.user.avatar_emoji || "😀"} username={m.user.username} size={32} />
+                            <div className={styles.memberInfo}>
+                              <span className={styles.memberUsername}>@{m.user.username}</span>
+                              <span className={styles.memberRoleBadge}>{m.role_level.name}</span>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className={styles.sidebarSub}>Personal Board</p>
                   <ul className={styles.memberList}>
-                    {members.map((m) => {
-                      const isOnline = onlineUsers.includes(m.user.username);
+                    {(() => {
+                      const isOnline = board.owner_username ? onlineUsers.includes(board.owner_username) : false;
                       return (
-                        <li key={m.id} className={styles.memberItem}>
+                        <li className={styles.memberItem}>
                           <span
                             className={`${styles.statusIndicator} ${
                               isOnline ? styles.onlineIndicator : styles.offlineIndicator
                             }`}
                             title={isOnline ? "Online" : "Offline"}
                           />
-                          <EmojiAvatar emoji={m.user.avatar_emoji || "😀"} username={m.user.username} size={32} />
+                          <EmojiAvatar emoji={board.owner_avatar_emoji || "😀"} username={board.owner_username || "owner"} size={32} />
                           <div className={styles.memberInfo}>
-                            <span className={styles.memberUsername}>@{m.user.username}</span>
-                            <span className={styles.memberRoleBadge}>{m.role_level.name}</span>
+                            <span className={styles.memberUsername}>@{board.owner_username || "owner"}</span>
+                            <span className={styles.memberRoleBadge}>Owner</span>
                           </div>
                         </li>
                       );
-                    })}
+                    })()}
                   </ul>
-                )}
-              </>
-            ) : (
-              <>
-                <p className={styles.sidebarSub}>Personal Board</p>
-                <ul className={styles.memberList}>
-                  {(() => {
-                    const isOnline = board.owner_username ? onlineUsers.includes(board.owner_username) : false;
-                    return (
-                      <li className={styles.memberItem}>
-                        <span
-                          className={`${styles.statusIndicator} ${
-                            isOnline ? styles.onlineIndicator : styles.offlineIndicator
-                          }`}
-                          title={isOnline ? "Online" : "Offline"}
-                        />
-                        <EmojiAvatar emoji={board.owner_avatar_emoji || "😀"} username={board.owner_username || "owner"} size={32} />
-                        <div className={styles.memberInfo}>
-                          <span className={styles.memberUsername}>@{board.owner_username || "owner"}</span>
-                          <span className={styles.memberRoleBadge}>Owner</span>
-                        </div>
-                      </li>
-                    );
-                  })()}
-                </ul>
-              </>
-            )}
-          </div>
-        </aside>
-      )}
+                </>
+              )}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* Middle - Board Workspace Content */}
       <div className={styles.boardContent}>
@@ -326,65 +336,82 @@ export function BoardWorkspace({ boardId }: Props) {
       </div>
 
       {/* Right Sidebar - Chat */}
-      {showChatSidebar && (
-        <aside className={styles.rightSidebar}>
-          <div className={styles.sidebarHeader}>
-            <h3>Board Chat</h3>
-            <button
-              type="button"
-              className={styles.closeSidebarBtn}
-              onClick={() => setShowChatSidebar(false)}
-              title="Close chat"
-            >
-              ×
-            </button>
-          </div>
-          
-          <div className={styles.chatFeed}>
-            {loadingChat ? (
-              <p className={styles.sidebarLoading}>Loading history…</p>
-            ) : chatMessages.length === 0 ? (
-              <p className={styles.noMessages}>No messages yet. Say hello!</p>
-            ) : (
-              <div className={styles.chatMessagesList}>
-                {chatMessages.map((msg) => (
-                  <div key={msg.id} className={styles.chatMessageItem}>
-                    <EmojiAvatar emoji={msg.avatar_emoji || "😀"} username={msg.username} size={28} />
-                    <div className={styles.chatMessageContent}>
-                      <div className={styles.chatMessageHeader}>
-                        <span className={styles.chatMessageUser}>@{msg.username}</span>
-                        <span className={styles.chatMessageTime}>
-                          {new Date(msg.created_at).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </div>
-                      <p className={styles.chatMessageText}>{msg.text}</p>
-                    </div>
-                  </div>
+      <AnimatePresence>
+        {showChatSidebar && (
+          <motion.aside
+            key="chat-sidebar"
+            initial={{ x: 300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 300, opacity: 0 }}
+            transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
+            className={styles.rightSidebar}
+          >
+            <div className={styles.sidebarHeader}>
+              <h3>Board Chat</h3>
+              <button
+                type="button"
+                className={styles.closeSidebarBtn}
+                onClick={() => setShowChatSidebar(false)}
+                title="Close chat"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className={styles.chatFeed}>
+              {loadingChat ? (
+                <p className={styles.sidebarLoading}>Loading history…</p>
+              ) : chatMessages.length === 0 ? (
+                <p className={styles.noMessages}>No messages yet. Say hello!</p>
+              ) : (
+                <div className={styles.chatMessagesList}>
+                  <AnimatePresence initial={false}>
+                    {chatMessages.map((msg) => (
+                      <motion.div
+                        key={msg.id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className={styles.chatMessageItem}
+                      >
+                        <EmojiAvatar emoji={msg.avatar_emoji || "😀"} username={msg.username} size={28} />
+                        <div className={styles.chatMessageContent}>
+                          <div className={styles.chatMessageHeader}>
+                            <span className={styles.chatMessageUser}>@{msg.username}</span>
+                            <span className={styles.chatMessageTime}>
+                              {new Date(msg.created_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
+                          <p className={styles.chatMessageText}>{msg.text}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  <div ref={(el) => { el?.scrollIntoView({ behavior: "smooth" }); }} />
+                </div>
+              )}
+            </div>
 
-                ))}
-                <div ref={(el) => { el?.scrollIntoView({ behavior: "smooth" }); }} />
-              </div>
-            )}
-          </div>
-
-          <form onSubmit={sendChatMessage} className={styles.chatInputForm}>
-            <input
-              type="text"
-              placeholder="Type a message…"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              className={styles.chatInputField}
-              required
-            />
-            <button type="submit" className={styles.chatSendBtn}>
-              Send
-            </button>
-          </form>
-        </aside>
-      )}
+            <form onSubmit={sendChatMessage} className={styles.chatInputForm}>
+              <input
+                type="text"
+                placeholder="Type a message…"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                className={styles.chatInputField}
+                required
+              />
+              <button type="submit" className={styles.chatSendBtn}>
+                Send
+              </button>
+            </form>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       <ToastStack />
       {showHistory ? (

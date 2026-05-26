@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import { motion, type Variants } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
 import { api } from "@/lib/api";
@@ -10,6 +11,21 @@ import type { TeamSummary } from "@/types/team";
 
 import { InlineEdit } from "./InlineEdit";
 import styles from "../app/page.module.css";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } },
+};
 
 export function Dashboard() {
   const searchParams = useSearchParams();
@@ -161,9 +177,18 @@ export function Dashboard() {
       ) : null}
 
       {!loading && filteredBoards.length > 0 ? (
-        <ul className={styles.list}>
+        <motion.ul
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className={styles.list}
+        >
           {filteredBoards.map((board) => (
-            <li key={board.id} className={styles.boardItem}>
+            <motion.li
+              key={board.id}
+              variants={itemVariants}
+              className={styles.boardItem}
+            >
               <Link href={`/boards/${board.id}`} className={styles.boardLink}>
                 Open →
               </Link>
@@ -190,9 +215,9 @@ export function Dashboard() {
                   Delete
                 </button>
               ) : null}
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       ) : null}
     </main>
   );

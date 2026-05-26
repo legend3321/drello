@@ -8,6 +8,7 @@ import type { ActivityLog, Card, Comment } from "@/types/board";
 
 import { InlineEdit } from "./InlineEdit";
 import { EmojiAvatar } from "./EmojiAvatar";
+import { motion } from "framer-motion";
 import styles from "./CardModal.module.css";
 
 
@@ -104,8 +105,24 @@ export function CardModal({ cardId, onClose }: Props) {
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className={styles.overlay}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: "spring", duration: 0.3, bounce: 0.15 }}
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+      >
         <header className={styles.header}>
           <div className={styles.titleArea}>
             <InlineEdit
@@ -252,7 +269,7 @@ export function CardModal({ cardId, onClose }: Props) {
             )}
           </div>
         </main>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
