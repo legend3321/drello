@@ -883,5 +883,31 @@
   color: var(--text-muted);
 }
 
+@media (max-width: 768px) {
+  .dashboardRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .chatViewContainer {
+    flex-direction: column;
+    height: calc(100vh - 16rem);
+  }
+  .chatSidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .memberSearchInput {
+    width: 100%;
+  }
+}
+
 
 

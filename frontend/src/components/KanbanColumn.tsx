@@ -1,14 +1,15 @@
 "use client";
 
 import { Droppable, type DroppableProvided } from "@hello-pangea/dnd";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef, useEffect } from "react";
 import { 
   ClipboardList, 
   Play, 
   CheckCircle2, 
   AlertTriangle, 
   MoreHorizontal, 
-  Plus 
+  Plus,
+  Trash2
 } from "lucide-react";
 
 import { useBoardStore } from "@/store/boardStore";
@@ -48,6 +49,20 @@ export function KanbanColumn({ list, onSelectCard, onCreateCard }: Props) {
 
   const [newCardTitle, setNewCardTitle] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const onAddCard = (event: FormEvent) => {
     event.preventDefault();
@@ -104,14 +119,30 @@ export function KanbanColumn({ list, onSelectCard, onCreateCard }: Props) {
             </button>
           )}
           {canEdit && (
-            <button
-              type="button"
-              className={styles.actionBtn}
-              onClick={onDeleteColumn}
-              title="Delete column"
-            >
-              <MoreHorizontal size={16} />
-            </button>
+            <div className={styles.menuContainer} ref={menuRef}>
+              <button
+                type="button"
+                className={styles.actionBtn}
+                onClick={() => setShowMenu(!showMenu)}
+                title="Column options"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+              {showMenu && (
+                <div className={styles.dropdownMenu}>
+                  <button
+                    type="button"
+                    className={styles.menuItemDanger}
+                    onClick={() => {
+                      onDeleteColumn();
+                      setShowMenu(false);
+                    }}
+                  >
+                    <Trash2 size={14} /> Delete Column
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </header>

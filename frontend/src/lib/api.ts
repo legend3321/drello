@@ -1,6 +1,6 @@
 import { getAccessToken } from "@/lib/auth-storage";
 import { useAuthStore } from "@/store/authStore";
-import type { Board, BoardSummary, Card, ListColumn, Comment, ActivityLog, BoardChatMessage } from "@/types/board";
+import type { Board, BoardMembership, BoardRole, BoardSummary, Card, ListColumn, Comment, ActivityLog, BoardChatMessage } from "@/types/board";
 import type { User } from "@/types/auth";
 import type {
   TeamAdminDashboard,
@@ -219,5 +219,25 @@ export const api = {
 
   getBoardChatHistory: (boardId: number) =>
     request<BoardChatMessage[]>(`/api/boards/${boardId}/chat/`),
+
+  getBoardMembers: (boardId: number) =>
+    request<BoardMembership[]>(`/api/boards/${boardId}/members/`),
+
+  addBoardMember: (boardId: number, userId: number, role: BoardRole) =>
+    request<BoardMembership>(`/api/boards/${boardId}/members/add/`, {
+      method: "POST",
+      body: JSON.stringify({ user_id: userId, role }),
+    }),
+
+  updateBoardMemberRole: (boardId: number, userId: number, role: BoardRole) =>
+    request<BoardMembership>(`/api/boards/${boardId}/members/${userId}/`, {
+      method: "PATCH",
+      body: JSON.stringify({ role }),
+    }),
+
+  removeBoardMember: (boardId: number, userId: number) =>
+    request<void>(`/api/boards/${boardId}/members/${userId}/remove/`, {
+      method: "DELETE",
+    }),
 };
 

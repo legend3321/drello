@@ -7,12 +7,20 @@ from rest_framework.response import Response
 
 from teams.services import get_membership
 
-from .access import boards_for_user, user_can_edit_board, user_can_manage_board_meta
+from .access import (
+    boards_for_user,
+    user_can_edit_board,
+    user_can_manage_board_meta,
+    user_can_manage_members,
+    get_board_role,
+    ROLE_HIERARCHY,
+)
 from .broadcast import broadcast_board_event
-from .models import Board, Card, List, Comment, ActivityLog
+from .models import Board, BoardMembership, Card, List, Comment, ActivityLog
 from .permissions import CanEditBoard, CanManageBoard, HasBoardAccess
 from .serializers import (
     BoardListSerializer,
+    BoardMembershipSerializer,
     BoardSerializer,
     CardMoveSerializer,
     CardSerializer,
@@ -21,6 +29,9 @@ from .serializers import (
     ActivityLogSerializer,
 )
 from .services import move_card
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -44,7 +55,13 @@ class BoardViewSet(viewsets.ModelViewSet):
             membership = get_membership(self.request.user, team)
             if not membership or not membership.role_level.can_edit_boards:
                 raise PermissionDenied("You cannot create boards for this team.")
-        serializer.save(owner=self.request.user)
+        board = serializer.save(owner=self.request.user)
+        # Auto-create owner BoardMembership
+        BoardMembership.objects.get_or_create(
+            board=board,
+            user=self.request.user,
+            defaults={"role": "owner"},
+        )
 
     def perform_update(self, serializer):
         board = self.get_object()
@@ -121,6 +138,147 @@ class BoardViewSet(viewsets.ModelViewSet):
 
         return Response(payload)
 
+    # ---- Board Member Management ----
+
+    @action(detail=True, methods=["get"], url_path="members")
+    def members(self, request, pk=None):
+        """List explicit board memberships."""
+        board = self.get_object()
+        from .access import user_can_view_board
+        if not user_can_view_board(request.user, board):
+            raise PermissionDenied("You cannot view this board.")
+        memberships = board.memberships.select_related("user", "user__profile").all()
+        return Response(BoardMembershipSerializer(memberships, many=True).data)
+
+    @action(detail=True, methods=["post"], url_path="members/add")
+    def add_member(self, request, pk=None):
+        """Add a user to the board with a specific role."""
+        board = self.get_object()
+        if not user_can_manage_members(request.user, board):
+            raise PermissionDenied("You cannot manage members on this board.")
+
+        user_id = request.data.get("user_id")
+        username = request.data.get("username")
+        role = request.data.get("role", "viewer")
+
+        if role not in ROLE_HIERARCHY:
+            return Response({"detail": f"Invalid role: {role}"}, status=400)
+
+        # Can't assign a role higher than your own
+        actor_role = get_board_role(request.user, board)
+        if ROLE_HIERARCHY.get(role, 99) < ROLE_HIERARCHY.get(actor_role, 99):
+            raise PermissionDenied("You cannot assign a role higher than your own.")
+
+        # Resolve user
+        target_user = None
+        if user_id:
+            target_user = User.objects.filter(id=user_id).first()
+        elif username:
+            target_user = User.objects.filter(username=username).first()
+
+        if not target_user:
+            return Response({"detail": "User not found."}, status=404)
+
+        # For team boards, verify the user is a team member
+        if board.team_id:
+            team_membership = get_membership(target_user, board.team)
+            if not team_membership:
+                return Response(
+                    {"detail": "User must be a member of the team to be added to this board."},
+                    status=400,
+                )
+
+        membership, created = BoardMembership.objects.get_or_create(
+            board=board,
+            user=target_user,
+            defaults={"role": role},
+        )
+        if not created:
+            return Response({"detail": "User is already a board member."}, status=400)
+
+        ActivityLog.objects.create(
+            board=board,
+            user=request.user,
+            action="member_added",
+            detail=f"Added @{target_user.username} as {role} to the board",
+        )
+
+        return Response(BoardMembershipSerializer(membership).data, status=201)
+
+    @action(detail=True, methods=["patch"], url_path=r"members/(?P<user_id>\d+)")
+    def update_member(self, request, pk=None, user_id=None):
+        """Update a board member's role."""
+        board = self.get_object()
+        if not user_can_manage_members(request.user, board):
+            raise PermissionDenied("You cannot manage members on this board.")
+
+        target_user_id = int(user_id)
+        membership = BoardMembership.objects.filter(board=board, user_id=target_user_id).first()
+        if not membership:
+            return Response({"detail": "Board membership not found."}, status=404)
+
+        new_role = request.data.get("role")
+        if not new_role or new_role not in ROLE_HIERARCHY:
+            return Response({"detail": f"Invalid role: {new_role}"}, status=400)
+
+        # Can't modify someone with a higher or equal role (unless you're owner)
+        actor_role = get_board_role(request.user, board)
+        if actor_role != "owner":
+            if ROLE_HIERARCHY.get(membership.role, 99) <= ROLE_HIERARCHY.get(actor_role, 99):
+                raise PermissionDenied("You cannot modify this member's role.")
+            if ROLE_HIERARCHY.get(new_role, 99) < ROLE_HIERARCHY.get(actor_role, 99):
+                raise PermissionDenied("You cannot assign a role higher than your own.")
+
+        # Can't change the owner's role
+        if membership.role == "owner":
+            raise PermissionDenied("Cannot change the board owner's role.")
+
+        old_role = membership.role
+        membership.role = new_role
+        membership.save()
+
+        ActivityLog.objects.create(
+            board=board,
+            user=request.user,
+            action="member_updated",
+            detail=f"Changed @{membership.user.username}'s role from {old_role} to {new_role}",
+        )
+
+        return Response(BoardMembershipSerializer(membership).data)
+
+    @action(detail=True, methods=["delete"], url_path=r"members/(?P<user_id>\d+)/remove")
+    def remove_member(self, request, pk=None, user_id=None):
+        """Remove a user from the board."""
+        board = self.get_object()
+        if not user_can_manage_members(request.user, board):
+            raise PermissionDenied("You cannot manage members on this board.")
+
+        target_user_id = int(user_id)
+        membership = BoardMembership.objects.filter(board=board, user_id=target_user_id).first()
+        if not membership:
+            return Response({"detail": "Board membership not found."}, status=404)
+
+        # Can't remove the owner
+        if membership.role == "owner":
+            raise PermissionDenied("Cannot remove the board owner.")
+
+        # Can't remove someone with a higher or equal role (unless you're owner)
+        actor_role = get_board_role(request.user, board)
+        if actor_role != "owner":
+            if ROLE_HIERARCHY.get(membership.role, 99) <= ROLE_HIERARCHY.get(actor_role, 99):
+                raise PermissionDenied("You cannot remove this member.")
+
+        username = membership.user.username
+        membership.delete()
+
+        ActivityLog.objects.create(
+            board=board,
+            user=request.user,
+            action="member_removed",
+            detail=f"Removed @{username} from the board",
+        )
+
+        return Response(status=204)
 
 
 class ListViewSet(viewsets.ModelViewSet):
@@ -328,7 +486,7 @@ class CardViewSet(viewsets.ModelViewSet):
                 card=card,
                 user=request.user,
                 action="commented",
-                detail=f"Commented on card '{card.title}': \"{comment.text[:60]}{( '...' if len(comment.text) > 60 else '')}\"",
+                detail=f"Commented on card '{card.title}': \"{comment.text[:60]}{( '...' if len(comment.text) > 60 else '')}\""
             )
 
             # Broadcast websocket event

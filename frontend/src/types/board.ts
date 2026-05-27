@@ -1,3 +1,12 @@
+export type BoardRole = "owner" | "admin" | "editor" | "commenter" | "viewer";
+
+export interface BoardMembership {
+  id: number;
+  user: { id: number; username: string; email: string; avatar_emoji?: string };
+  role: BoardRole;
+  joined_at: string;
+}
+
 export interface Card {
   id: number;
   list_id: number;
@@ -39,6 +48,9 @@ export interface Board {
   permissions?: {
     can_edit: boolean;
     can_delete: boolean;
+    can_manage_members: boolean;
+    can_comment: boolean;
+    my_role: BoardRole | null;
   };
 }
 
@@ -53,6 +65,9 @@ export interface BoardSummary {
   permissions?: {
     can_edit: boolean;
     can_delete: boolean;
+    can_manage_members: boolean;
+    can_comment: boolean;
+    my_role: BoardRole | null;
   };
 }
 

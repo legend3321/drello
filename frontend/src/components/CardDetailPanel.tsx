@@ -34,6 +34,7 @@ const LABEL_COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#db2777", "#a855f7", "#e
 
 export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: Props) {
   const board = useBoardStore((s) => s.board);
+  const deleteCard = useBoardStore((s) => s.deleteCard);
   const applyRemoteCard = useBoardStore((s) => s.applyRemoteCard);
   const updateCardTitle = useBoardStore((s) => s.updateCardTitle);
   const addToast = useBoardStore((s) => s.addToast);
@@ -304,6 +305,18 @@ export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: P
     }
   };
 
+  const handleDeleteCard = async () => {
+    if (!cardId || !card) return;
+    if (!window.confirm(`Delete task "${card.title}"? This action cannot be undone.`)) return;
+    try {
+      await deleteCard(cardId);
+      addToast("Task deleted successfully", "success");
+      onClose();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : "Failed to delete task", "error");
+    }
+  };
+
   return (
     <>
       {/* Dimmed Backdrop */}
@@ -345,14 +358,26 @@ export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: P
                 in column <strong>{board?.lists.find((l) => l.id === (isCreate ? listId : card?.list_id))?.title}</strong>
               </div>
             </div>
-            <button 
-              type="button" 
-              className={styles.closeBtn} 
-              onClick={onClose} 
-              aria-label="Close panel"
-            >
-              <X size={18} />
-            </button>
+            <div className={styles.headerControls}>
+              {!isCreate && canEdit && (
+                <button
+                  type="button"
+                  className={styles.deleteBtn}
+                  onClick={handleDeleteCard}
+                  title="Delete task"
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+              <button 
+                type="button" 
+                className={styles.closeBtn} 
+                onClick={onClose} 
+                aria-label="Close panel"
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Metadata Grid */}

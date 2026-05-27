@@ -38,15 +38,11 @@
   min-width: 0;
 }
 
-.handle {
-  flex-shrink: 0;
-  color: #475569;
+.draggable {
   cursor: grab;
-  font-size: 0.85rem;
-  user-select: none;
 }
 
-.handle:active {
+.draggable:active {
   cursor: grabbing;
 }
 

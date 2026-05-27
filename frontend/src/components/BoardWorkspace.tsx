@@ -6,17 +6,17 @@ import { useEffect, useState, useRef } from "react";
 import { api } from "@/lib/api";
 import { connectBoardSocket, type BoardSocketConnection } from "@/lib/websocket";
 import { useBoardStore } from "@/store/boardStore";
-import type { BoardChatMessage } from "@/types/board";
+import type { BoardChatMessage, BoardMembership } from "@/types/board";
 import type { TeamMembership } from "@/types/team";
 
-import { InlineEdit } from "./InlineEdit";
+
 import { KanbanBoard } from "./KanbanBoard";
 import { ToastStack } from "./ToastStack";
 import { HistoryModal } from "./HistoryModal";
 import { EmojiAvatar } from "./EmojiAvatar";
 import { CardDetailPanel } from "./CardDetailPanel";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings as CogIcon, History as HistoryIcon, Trash2 as TrashIcon } from "lucide-react";
+import { Settings as CogIcon, History as HistoryIcon, ExternalLink as LinkIcon } from "lucide-react";
 import styles from "./BoardWorkspace.module.css";
 
 
@@ -33,6 +33,7 @@ export function BoardWorkspace({ boardId }: Props) {
   const [showHistory, setShowHistory] = useState(false);
   const [members, setMembers] = useState<TeamMembership[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
+  const [boardMembers, setBoardMembers] = useState<BoardMembership[]>([]);
   
   const [activeTab, setActiveTab] = useState<"board" | "members" | "chat" | "dashboard">("board");
   const [unreadChatCount, setUnreadChatCount] = useState(0);
@@ -63,7 +64,7 @@ export function BoardWorkspace({ boardId }: Props) {
 
   const loadBoard = useBoardStore((s) => s.loadBoard);
   const setConnected = useBoardStore((s) => s.setConnected);
-  const updateBoardTitle = useBoardStore((s) => s.updateBoardTitle);
+
   const applyRemoteBoardUpdate = useBoardStore((s) => s.applyRemoteBoardUpdate);
   const applyRemoteList = useBoardStore((s) => s.applyRemoteList);
   const removeRemoteList = useBoardStore((s) => s.removeRemoteList);
@@ -152,6 +153,19 @@ export function BoardWorkspace({ boardId }: Props) {
   }, [board?.team_id]);
 
   useEffect(() => {
+    if (!board) return;
+    const fetchBoardMembers = async () => {
+      try {
+        const data = await api.getBoardMembers(board.id);
+        setBoardMembers(data);
+      } catch (e) {
+        console.error("Failed to fetch board members", e);
+      }
+    };
+    void fetchBoardMembers();
+  }, [board?.id]);
+
+  useEffect(() => {
     const fetchChatHistory = async () => {
       setLoadingChat(true);
       try {
@@ -200,18 +214,7 @@ export function BoardWorkspace({ boardId }: Props) {
     setChatInput("");
   };
 
-  const deleteBoard = async () => {
-    if (!board) return;
-    if (!window.confirm(`Delete board "${board.title}"? This cannot be undone.`)) {
-      return;
-    }
-    try {
-      await api.deleteBoard(board.id);
-      router.push("/");
-    } catch (e) {
-      addToast(e instanceof Error ? e.message : "Failed to delete board", "error");
-    }
-  };
+
 
   const [memberSearchQuery, setMemberSearchQuery] = useState("");
 
@@ -241,6 +244,19 @@ export function BoardWorkspace({ boardId }: Props) {
     (m.user.email && m.user.email.toLowerCase().includes(memberSearchQuery.toLowerCase()))
   );
 
+  const BOARD_ROLE_COLORS: Record<string, string> = {
+    owner: "#f59e0b",
+    admin: "#8b5cf6",
+    editor: "#3b82f6",
+    commenter: "#10b981",
+    viewer: "#64748b",
+  };
+
+  const getBoardRole = (userId: number) => {
+    const bm = boardMembers.find((m) => m.user.id === userId);
+    return bm?.role ?? null;
+  };
+
   const renderMembersView = () => {
     return (
       <div className={styles.membersView}>
@@ -261,7 +277,7 @@ export function BoardWorkspace({ boardId }: Props) {
           <div className={styles.membersGrid}>
             {filteredMembers.map((m) => {
               const isOnline = onlineUsers.includes(m.user.username);
-              const isOwner = m.user.id === board.owner_id;
+              const boardRole = getBoardRole(m.user.id);
               return (
                 <div key={m.id} className={styles.memberCard}>
                   <div className={styles.memberCardAvatar}>
@@ -274,9 +290,21 @@ export function BoardWorkspace({ boardId }: Props) {
                   <div className={styles.memberCardInfo}>
                     <h4 className={styles.memberCardUsername}>@{m.user.username}</h4>
                     <p className={styles.memberCardEmail}>{m.user.email || "No email added"}</p>
-                    <span className={`${styles.roleBadge} ${isOwner ? styles.ownerBadge : ""}`}>
-                      {isOwner ? "Owner" : m.role_level.name}
-                    </span>
+                    {boardRole ? (
+                      <span 
+                        className={styles.roleBadge} 
+                        style={{ 
+                          color: BOARD_ROLE_COLORS[boardRole],
+                          background: `${BOARD_ROLE_COLORS[boardRole]}14`,
+                        }}
+                      >
+                        {boardRole.charAt(0).toUpperCase() + boardRole.slice(1)}
+                      </span>
+                    ) : (
+                      <span className={styles.roleBadge}>
+                        {m.role_level.name}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -489,13 +517,7 @@ export function BoardWorkspace({ boardId }: Props) {
       <div className={styles.boardContent}>
         <header className={styles.header}>
           <div className={styles.titleRow}>
-            <InlineEdit
-              as="heading"
-              value={board.title}
-              onSave={updateBoardTitle}
-              className={styles.boardTitle}
-              disabled={!board.permissions?.can_edit}
-            />
+            <h2 className={styles.boardTitle}>{board.title}</h2>
             <div className={styles.headerActions} ref={settingsRef}>
               <button
                 type="button"
@@ -508,6 +530,16 @@ export function BoardWorkspace({ boardId }: Props) {
 
               {showSettingsDropdown && (
                 <div className={styles.settingsDropdown}>
+                  <button
+                    type="button"
+                    className={styles.dropdownItem}
+                    onClick={() => {
+                      router.push(`/boards/${board.id}/settings`);
+                      setShowSettingsDropdown(false);
+                    }}
+                  >
+                    <LinkIcon size={14} style={{ marginRight: "8px" }} /> Board Settings
+                  </button>
                   <button 
                     type="button" 
                     className={styles.dropdownItem}
@@ -518,18 +550,7 @@ export function BoardWorkspace({ boardId }: Props) {
                   >
                     <HistoryIcon size={14} style={{ marginRight: "8px" }} /> Board History
                   </button>
-                  {board.permissions?.can_delete && (
-                    <button 
-                      type="button" 
-                      className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
-                      onClick={() => {
-                        void deleteBoard();
-                        setShowSettingsDropdown(false);
-                      }}
-                    >
-                      <TrashIcon size={14} style={{ marginRight: "8px" }} /> Delete Board
-                    </button>
-                  )}
+
                 </div>
               )}
             </div>

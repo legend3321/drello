@@ -26,6 +26,32 @@ class Board(models.Model):
         return self.title
 
 
+class BoardMembership(models.Model):
+    ROLE_CHOICES = [
+        ("owner", "Owner"),
+        ("admin", "Admin"),
+        ("editor", "Editor"),
+        ("commenter", "Commenter"),
+        ("viewer", "Viewer"),
+    ]
+
+    board = models.ForeignKey(Board, related_name="memberships", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="board_memberships",
+        on_delete=models.CASCADE,
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="viewer")
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("board", "user")
+        ordering = ["role", "joined_at"]
+
+    def __str__(self):
+        return f"{self.user.username} — {self.role} on {self.board.title}"
+
+
 class List(models.Model):
     board = models.ForeignKey(Board, related_name="lists", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)

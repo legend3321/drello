@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from teams.models import Team
 
-from .models import Board, Card, List, Comment, ActivityLog
+from .models import Board, BoardMembership, Card, List, Comment, ActivityLog
 
 
 from django.contrib.auth import get_user_model
@@ -82,6 +82,32 @@ class ListSerializer(serializers.ModelSerializer):
         return data
 
 
+def _build_board_permissions(user, board):
+    """Build the permissions dict for a board, shared by both serializers."""
+    if user and user.is_authenticated:
+        from .access import (
+            get_board_role,
+            user_can_edit_board,
+            user_can_manage_board_meta,
+            user_can_manage_members,
+            user_can_comment_board,
+        )
+        return {
+            "can_edit": user_can_edit_board(user, board),
+            "can_delete": user_can_manage_board_meta(user, board),
+            "can_manage_members": user_can_manage_members(user, board),
+            "can_comment": user_can_comment_board(user, board),
+            "my_role": get_board_role(user, board),
+        }
+    return {
+        "can_edit": False,
+        "can_delete": False,
+        "can_manage_members": False,
+        "can_comment": False,
+        "my_role": None,
+    }
+
+
 class BoardSerializer(serializers.ModelSerializer):
     lists = ListSerializer(many=True, read_only=True)
     team_id = serializers.PrimaryKeyRelatedField(
@@ -105,20 +131,9 @@ class BoardSerializer(serializers.ModelSerializer):
         data["owner_email"] = instance.owner.email
         data["owner_avatar_emoji"] = getattr(getattr(instance.owner, "profile", None), "avatar_emoji", "😀")
 
-        
         request = self.context.get("request")
         user = request.user if request else None
-        if user and user.is_authenticated:
-            from .access import user_can_edit_board, user_can_manage_board_meta
-            data["permissions"] = {
-                "can_edit": user_can_edit_board(user, instance),
-                "can_delete": user_can_manage_board_meta(user, instance),
-            }
-        else:
-            data["permissions"] = {
-                "can_edit": False,
-                "can_delete": False,
-            }
+        data["permissions"] = _build_board_permissions(user, instance)
         return data
 
 
@@ -137,17 +152,7 @@ class BoardListSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         request = self.context.get("request")
         user = request.user if request else None
-        if user and user.is_authenticated:
-            from .access import user_can_edit_board, user_can_manage_board_meta
-            data["permissions"] = {
-                "can_edit": user_can_edit_board(user, instance),
-                "can_delete": user_can_manage_board_meta(user, instance),
-            }
-        else:
-            data["permissions"] = {
-                "can_edit": False,
-                "can_delete": False,
-            }
+        data["permissions"] = _build_board_permissions(user, instance)
         return data
 
 
@@ -181,3 +186,12 @@ class ActivityLogSerializer(serializers.ModelSerializer):
         model = ActivityLog
         fields = ["id", "username", "action", "detail", "card_title", "created_at"]
         read_only_fields = fields
+
+
+class BoardMembershipSerializer(serializers.ModelSerializer):
+    user = UserSummarySerializer(read_only=True)
+
+    class Meta:
+        model = BoardMembership
+        fields = ["id", "user", "role", "joined_at"]
+        read_only_fields = ["id", "joined_at"]
