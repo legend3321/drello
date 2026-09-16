@@ -9,7 +9,8 @@ import {
   AlertTriangle, 
   MoreHorizontal, 
   Plus,
-  Trash2
+  Trash2,
+  Smile
 } from "lucide-react";
 
 import { useBoardStore } from "@/store/boardStore";
@@ -25,9 +26,26 @@ type Props = {
   onCreateCard?: (listId: number) => void;
 };
 
-function getColumnIcon(title: string) {
+const COLUMN_EMOJIS = [
+  "📋", "🚀", "⚡", "🎯", "🔥", "✨",
+  "⏳", "🔨", "👀", "✅", "🎉", "💡",
+  "📌", "🐛", "🎨", "📦", "🛑", "⭐",
+];
+
+function parseTitleEmoji(rawTitle: string): { emoji: string | null; cleanTitle: string } {
+  const trimmed = rawTitle.trim();
+  // Match an emoji at start of title followed by a space
+  const emojiRegex = /^(\p{Extended_Pictographic}|\p{Emoji_Presentation})\s+/u;
+  const match = trimmed.match(emojiRegex);
+  if (match) {
+    return { emoji: match[1], cleanTitle: trimmed.slice(match[0].length).trim() };
+  }
+  return { emoji: null, cleanTitle: trimmed };
+}
+
+function getDefaultColumnIcon(title: string) {
   const t = title.toLowerCase();
-  if (t.includes("todo") || t.includes("new")) {
+  if (t.includes("todo") || t.includes("new") || t.includes("backlog")) {
     return <ClipboardList size={16} className={styles.columnIcon} style={{ color: "#3b82f6" }} />;
   }
   if (t.includes("progress") || t.includes("working") || t.includes("active")) {
@@ -50,12 +68,19 @@ export function KanbanColumn({ list, onSelectCard, onCreateCard }: Props) {
   const [newCardTitle, setNewCardTitle] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+  const { emoji: customEmoji, cleanTitle } = parseTitleEmoji(list.title);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowMenu(false);
+      }
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -63,6 +88,19 @@ export function KanbanColumn({ list, onSelectCard, onCreateCard }: Props) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleSelectEmoji = (emoji: string) => {
+    setShowEmojiPicker(false);
+    if (!canEdit) return;
+    const newTitle = `${emoji} ${cleanTitle}`;
+    void updateListTitle(list.id, newTitle);
+  };
+
+  const handleResetEmoji = () => {
+    setShowEmojiPicker(false);
+    if (!canEdit) return;
+    void updateListTitle(list.id, cleanTitle);
+  };
 
   const onAddCard = (event: FormEvent) => {
     event.preventDefault();
@@ -91,11 +129,56 @@ export function KanbanColumn({ list, onSelectCard, onCreateCard }: Props) {
     <section className={styles.column}>
       <header className={styles.header}>
         <div className={styles.headerTitleArea}>
-          {getColumnIcon(list.title)}
+          <div className={styles.iconWrapper} ref={emojiPickerRef}>
+            <button
+              type="button"
+              className={styles.columnEmojiBtn}
+              onClick={() => canEdit && setShowEmojiPicker(!showEmojiPicker)}
+              title={canEdit ? "Click to change column icon/emoji" : undefined}
+              style={{ cursor: canEdit ? "pointer" : "default" }}
+            >
+              {customEmoji ? (
+                <span>{customEmoji}</span>
+              ) : (
+                getDefaultColumnIcon(cleanTitle)
+              )}
+            </button>
+
+            {canEdit && showEmojiPicker && (
+              <div className={styles.emojiPopover}>
+                <span className={styles.emojiPopoverTitle}>Choose Column Icon</span>
+                <div className={styles.emojiGrid}>
+                  {COLUMN_EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      className={`${styles.emojiOption} ${customEmoji === emoji ? styles.emojiOptionActive : ""}`}
+                      onClick={() => handleSelectEmoji(emoji)}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+                {customEmoji && (
+                  <button
+                    type="button"
+                    className={styles.resetIconBtn}
+                    onClick={handleResetEmoji}
+                  >
+                    Reset to Default Icon
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
           <InlineEdit
             as="heading"
-            value={list.title}
-            onSave={(title) => updateListTitle(list.id, title)}
+            value={cleanTitle}
+            onSave={(title) => {
+              const newFullTitle = customEmoji ? `${customEmoji} ${title}` : title;
+              return updateListTitle(list.id, newFullTitle);
+            }}
             className={styles.columnTitle}
             disabled={!canEdit}
           />
@@ -130,6 +213,16 @@ export function KanbanColumn({ list, onSelectCard, onCreateCard }: Props) {
               </button>
               {showMenu && (
                 <div className={styles.dropdownMenu}>
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    onClick={() => {
+                      setShowMenu(false);
+                      setShowEmojiPicker(true);
+                    }}
+                  >
+                    <Smile size={14} /> Change Emoji / Icon
+                  </button>
                   <button
                     type="button"
                     className={styles.menuItemDanger}

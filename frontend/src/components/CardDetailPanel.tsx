@@ -40,6 +40,15 @@ const LABEL_COLORS = [
   { name: "Red", value: "#ef4444" },
 ];
 
+const DEFAULT_LABEL_SUGGESTIONS = [
+  { text: "Bug", color: "#ef4444" },
+  { text: "Feature", color: "#3b82f6" },
+  { text: "Design", color: "#a855f7" },
+  { text: "Urgent", color: "#db2777" },
+  { text: "Research", color: "#f59e0b" },
+  { text: "Docs", color: "#10b981" },
+];
+
 export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: Props) {
   const board = useBoardStore((s) => s.board);
   const deleteCard = useBoardStore((s) => s.deleteCard);
@@ -102,6 +111,24 @@ export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: P
   const currentChecklist = isCreate ? checklist : (card?.checklist || []);
   const currentAttachments = isCreate ? attachments : (card?.attachments || []);
   const currentAssignedUsers = isCreate ? assignedUsers : (card?.assigned_users || []);
+
+  // Compute all unique previously added labels from the board
+  const boardLabels = React.useMemo(() => {
+    if (!board) return [];
+    const map = new Map<string, { text: string; color: string }>();
+    for (const list of board.lists) {
+      for (const c of list.cards) {
+        if (c.labels) {
+          for (const l of c.labels) {
+            if (l.text && !map.has(l.text.toLowerCase())) {
+              map.set(l.text.toLowerCase(), l);
+            }
+          }
+        }
+      }
+    }
+    return Array.from(map.values());
+  }, [board]);
 
   if (!isCreate && !card) return null;
 
@@ -529,7 +556,7 @@ export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: P
               )}
 
               {addingLabel && (
-                <form onSubmit={addLabel} className={styles.addLabelContainer} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <form onSubmit={addLabel} className={styles.addLabelContainer} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
                     <input
                       className={styles.addLabelInput}
@@ -559,6 +586,63 @@ export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: P
                       </button>
                     ))}
                   </div>
+
+                  {/* Suggestions and Previously Added Labels */}
+                  {boardLabels.filter(bl => !currentLabels.some(cl => cl.text.toLowerCase() === bl.text.toLowerCase())).length > 0 && (
+                    <div className={styles.labelSuggestionsSection}>
+                      <span className={styles.labelSuggestionsTitle}>Previously Added</span>
+                      <div className={styles.labelSuggestionsList}>
+                        {boardLabels
+                          .filter(bl => !currentLabels.some(cl => cl.text.toLowerCase() === bl.text.toLowerCase()))
+                          .map((bl, i) => (
+                            <button
+                              key={`prev-${i}`}
+                              type="button"
+                              className={styles.labelSuggestionChip}
+                              style={{
+                                background: `${bl.color}15`,
+                                color: bl.color,
+                                borderColor: `${bl.color}40`,
+                              }}
+                              onClick={() => handleAddLabel(bl.text, bl.color)}
+                            >
+                              + {bl.text}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {DEFAULT_LABEL_SUGGESTIONS.filter(
+                    sug => !currentLabels.some(cl => cl.text.toLowerCase() === sug.text.toLowerCase()) &&
+                           !boardLabels.some(bl => bl.text.toLowerCase() === sug.text.toLowerCase())
+                  ).length > 0 && (
+                    <div className={styles.labelSuggestionsSection}>
+                      <span className={styles.labelSuggestionsTitle}>Suggestions</span>
+                      <div className={styles.labelSuggestionsList}>
+                        {DEFAULT_LABEL_SUGGESTIONS
+                          .filter(
+                            sug => !currentLabels.some(cl => cl.text.toLowerCase() === sug.text.toLowerCase()) &&
+                                   !boardLabels.some(bl => bl.text.toLowerCase() === sug.text.toLowerCase())
+                          )
+                          .map((sug, i) => (
+                            <button
+                              key={`sug-${i}`}
+                              type="button"
+                              className={styles.labelSuggestionChip}
+                              style={{
+                                background: `${sug.color}15`,
+                                color: sug.color,
+                                borderColor: `${sug.color}40`,
+                              }}
+                              onClick={() => handleAddLabel(sug.text, sug.color)}
+                            >
+                              + {sug.text}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </form>
               )}
             </div>

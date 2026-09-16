@@ -376,6 +376,46 @@
   color: #fff;
 }
 
+/* Label Suggestions & Previously Added */
+.labelSuggestionsSection {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.labelSuggestionsTitle {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.labelSuggestionsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.labelSuggestionChip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.labelSuggestionChip:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
 /* Attachments Layout Grid */
 .attachmentsGrid {
   display: flex;

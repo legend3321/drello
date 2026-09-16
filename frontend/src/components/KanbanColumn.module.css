@@ -31,6 +31,104 @@
   flex-shrink: 0;
 }
 
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.columnEmojiBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0.15rem 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.columnEmojiBtn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+  transform: scale(1.1);
+}
+
+.emojiPopover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.5rem;
+  box-shadow: 0 10px 25px -5px var(--shadow-color);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 210px;
+}
+
+.emojiPopoverTitle {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  padding: 0 0.2rem;
+}
+
+.emojiGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.25rem;
+}
+
+.emojiOption {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  padding: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s ease;
+}
+
+.emojiOption:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+  transform: scale(1.15);
+}
+
+.emojiOptionActive {
+  background: var(--bg-hover);
+  border-color: #3b82f6;
+}
+
+.resetIconBtn {
+  background: transparent;
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.resetIconBtn:hover {
+  color: var(--text-main);
+  background: var(--bg-hover);
+}
+
 .columnTitle {
   font-size: 0.9rem;
   font-weight: 700;
@@ -89,6 +187,27 @@
   flex-direction: column;
   z-index: 100;
   min-width: 140px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.menuItem:hover {
+  background: var(--bg-hover);
 }
 
 .menuItemDanger {
