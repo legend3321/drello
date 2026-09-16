@@ -15,8 +15,8 @@ import { ToastStack } from "./ToastStack";
 import { HistoryModal } from "./HistoryModal";
 import { EmojiAvatar } from "./EmojiAvatar";
 import { CardDetailPanel } from "./CardDetailPanel";
-import { motion, AnimatePresence } from "framer-motion";
-import { Settings as CogIcon, History as HistoryIcon, ExternalLink as LinkIcon } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import { Settings as CogIcon, History as HistoryIcon, Sliders as SlidersIcon } from "lucide-react";
 import styles from "./BoardWorkspace.module.css";
 
 
@@ -538,7 +538,7 @@ export function BoardWorkspace({ boardId }: Props) {
                       setShowSettingsDropdown(false);
                     }}
                   >
-                    <LinkIcon size={14} style={{ marginRight: "8px" }} /> Board Settings
+                    <SlidersIcon size={14} style={{ marginRight: "8px" }} /> Board Settings
                   </button>
                   <button 
                     type="button" 

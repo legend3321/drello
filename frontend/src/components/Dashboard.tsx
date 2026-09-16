@@ -9,8 +9,7 @@ import { api } from "@/lib/api";
 import type { BoardSummary } from "@/types/board";
 import type { TeamSummary } from "@/types/team";
 
-import { InlineEdit } from "./InlineEdit";
-import { Trash2, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import styles from "../app/page.module.css";
 
 const containerVariants: Variants = {
@@ -38,6 +37,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [newBoardTitle, setNewBoardTitle] = useState("");
   const [boardTeamId, setBoardTeamId] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"recent" | "name" | "oldest">("recent");
 
   useEffect(() => {
     if (filterTeamId) {
@@ -82,33 +82,22 @@ export function Dashboard() {
     }
   };
 
-  const renameBoard = async (id: number, title: string) => {
-    try {
-      await api.updateBoard(id, title);
-      setBoards((prev) =>
-        prev.map((b) => (b.id === id ? { ...b, title } : b)),
-      );
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to rename board");
-    }
-  };
-
-  const removeBoard = async (id: number, title: string) => {
-    if (!window.confirm(`Delete board "${title}"? This cannot be undone.`)) {
-      return;
-    }
-    try {
-      await api.deleteBoard(id);
-      setBoards((prev) => prev.filter((b) => b.id !== id));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to delete board");
-    }
-  };
-
   const activeTeam = teams.find((t) => t.id === filterTeamId);
   const filteredBoards = filterTeamId
     ? boards.filter((b) => b.team_id === filterTeamId)
     : boards;
+
+  const sortedBoards = [...filteredBoards].sort((a, b) => {
+    if (sortBy === "name") {
+      return a.title.localeCompare(b.title);
+    }
+    if (sortBy === "oldest") {
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    }
+    const timeA = new Date(a.updated_at || a.created_at).getTime();
+    const timeB = new Date(b.updated_at || b.created_at).getTime();
+    return timeB - timeA;
+  });
 
   return (
     <main className={styles.main}>
@@ -155,17 +144,17 @@ export function Dashboard() {
         </form>
       </header>
 
-      {/* Filter Row matching mockup dropdown styling */}
+      {/* Filter Row with functional sorting */}
       <div className={styles.filterRow}>
-        <select className={styles.filterSelect} defaultValue="sort">
-          <option value="sort">Sort by</option>
-          <option value="name">Name</option>
-          <option value="date">Date</option>
-        </select>
-        <select className={styles.filterSelect} defaultValue="2-weeks">
-          <option value="2-weeks">2 Weeks</option>
-          <option value="1-month">1 Month</option>
-          <option value="all-time">All Time</option>
+        <select
+          className={styles.filterSelect}
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as "recent" | "name" | "oldest")}
+          aria-label="Sort boards"
+        >
+          <option value="recent">Recently updated</option>
+          <option value="name">Alphabetical (A–Z)</option>
+          <option value="oldest">Oldest first</option>
         </select>
       </div>
 
@@ -173,7 +162,7 @@ export function Dashboard() {
 
       {loading ? <p className={styles.hint}>Loading boards…</p> : null}
 
-      {!loading && !error && filteredBoards.length === 0 ? (
+      {!loading && !error && sortedBoards.length === 0 ? (
         <p className={styles.hint}>
           {filterTeamId
             ? "No boards for this team yet. Enter a name above and click New board."
@@ -181,26 +170,23 @@ export function Dashboard() {
         </p>
       ) : null}
 
-      {!loading && filteredBoards.length > 0 ? (
+      {!loading && sortedBoards.length > 0 ? (
         <motion.ul
           variants={containerVariants}
           initial="hidden"
           animate="show"
           className={styles.list}
         >
-          {filteredBoards.map((board) => (
+          {sortedBoards.map((board) => (
             <motion.li
               key={board.id}
               variants={itemVariants}
               className={styles.boardItem}
             >
               <div className={styles.boardMeta}>
-                <InlineEdit
-                  value={board.title}
-                  onSave={(title) => renameBoard(board.id, title)}
-                  className={styles.boardName}
-                  disabled={!board.permissions?.can_edit}
-                />
+                <Link href={`/boards/${board.id}`} className={styles.boardTitleLink}>
+                  <h3 className={styles.boardName}>{board.title}</h3>
+                </Link>
                 {board.team_name ? (
                   <span className={styles.teamBadge}>{board.team_name}</span>
                 ) : (
@@ -209,19 +195,8 @@ export function Dashboard() {
               </div>
               <div className={styles.boardFooter}>
                 <Link href={`/boards/${board.id}`} className={styles.boardLink}>
-                  Open <ArrowRight size={14} />
+                  Open board <ArrowRight size={14} />
                 </Link>
-                {board.permissions?.can_delete ? (
-                  <button
-                    type="button"
-                    className={styles.deleteBtn}
-                    onClick={() => void removeBoard(board.id, board.title)}
-                    aria-label={`Delete ${board.title}`}
-                    title="Delete board"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                ) : null}
               </div>
             </motion.li>
           ))}

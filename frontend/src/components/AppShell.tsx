@@ -14,8 +14,7 @@ import {
   X, 
   Menu,
   Sun,
-  Moon,
-  ChevronDown
+  Moon
 } from "lucide-react";
 
 import { useAuthStore } from "@/store/authStore";
@@ -34,7 +33,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [settingsExpanded, setSettingsExpanded] = useState(false);
   const [themeMode, setThemeMode] = useState<"light" | "dark">("dark");
   
   // New States for Search & Notifications
@@ -178,24 +176,42 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       );
     }
     if (pathname.startsWith("/boards/")) {
+      const isBoardSettings = pathname.includes("/settings");
       return (
         <>
           <span>Drello</span>
           <ChevronRight size={14} />
           <Link href="/">Boards</Link>
           <ChevronRight size={14} />
-          <span className={styles.breadcrumbActive}>
-            {board ? board.title : "Board Workspace"}
-          </span>
+          {isBoardSettings ? (
+            <>
+              {board ? <Link href={`/boards/${board.id}`}>{board.title}</Link> : <Link href="/">Board</Link>}
+              <ChevronRight size={14} />
+              <span className={styles.breadcrumbActive}>Settings</span>
+            </>
+          ) : (
+            <span className={styles.breadcrumbActive}>
+              {board ? board.title : "Board Workspace"}
+            </span>
+          )}
         </>
       );
     }
     if (pathname.startsWith("/teams")) {
+      const isTeamAdmin = pathname.includes("/admin");
       return (
         <>
           <span>Drello</span>
           <ChevronRight size={14} />
-          <span className={styles.breadcrumbActive}>Teams</span>
+          {isTeamAdmin ? (
+            <>
+              <Link href="/teams">Teams</Link>
+              <ChevronRight size={14} />
+              <span className={styles.breadcrumbActive}>Admin</span>
+            </>
+          ) : (
+            <span className={styles.breadcrumbActive}>Teams</span>
+          )}
         </>
       );
     }
@@ -256,30 +272,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className={styles.menuLinkIcon}><Users size={18} /></span>
                 <span className={styles.menuLinkText}>Teams</span>
               </Link>
-            </li>
-            
-            {/* Collapsible Settings */}
-            <li>
-              <div 
-                className={styles.menuLink} 
-                onClick={() => setSettingsExpanded(!settingsExpanded)}
-              >
-                <span className={styles.menuLinkIcon}><Settings size={18} /></span>
-                <span className={styles.menuLinkText}>Workspace settings</span>
-                <ChevronDown 
-                  size={16} 
-                  className={`${styles.menuArrow} ${settingsExpanded ? styles.menuArrowExpanded : ""}`}
-                />
-              </div>
-              {settingsExpanded && (
-                <ul className={styles.submenuList}>
-                  <li>
-                    <Link href="/settings" className={styles.submenuLink}>
-                      Profile Settings
-                    </Link>
-                  </li>
-                </ul>
-              )}
             </li>
           </ul>
         </div>

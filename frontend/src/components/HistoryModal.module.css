@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: flex-end;
@@ -13,21 +13,21 @@
 }
 
 .panel {
-  background: #0f172a;
-  border-left: 1px solid #334155;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-color);
   width: 100%;
   max-width: 420px;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 25px -5px rgba(0, 0, 0, 0.5);
+  box-shadow: -10px 0 25px -5px var(--shadow-color);
   animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
 
 .header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,7 +36,7 @@
 .header h2 {
   font-size: 1.15rem;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--text-main);
   margin: 0;
 }
 
@@ -44,7 +44,7 @@
   background: transparent;
   border: none;
   font-size: 1.75rem;
-  color: #94a3b8;
+  color: var(--text-dim);
   cursor: pointer;
   line-height: 1;
   padding: 0 0.5rem;
@@ -53,8 +53,8 @@
 }
 
 .closeBtn:hover {
-  color: #f8fafc;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  background: var(--bg-hover);
 }
 
 .content {
@@ -65,7 +65,7 @@
 
 .hint {
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--text-dim);
   text-align: center;
   margin-top: 2rem;
 }
@@ -80,8 +80,8 @@
 }
 
 .item {
-  background: #131d35;
-  border: 1px solid #1e293b;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.75rem 1rem;
   display: flex;
@@ -103,12 +103,12 @@
 
 .date {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--text-dim);
 }
 
 .text {
   font-size: 0.875rem;
-  color: #e2e8f0;
+  color: var(--text-main);
   margin: 0;
   line-height: 1.4;
   word-break: break-word;
@@ -116,9 +116,9 @@
 
 .cardTag {
   font-size: 0.7rem;
-  background: #1e293b;
-  border: 1px solid #334155;
-  color: #94a3b8;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   align-self: flex-start;

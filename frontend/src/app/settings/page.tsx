@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
@@ -68,9 +67,6 @@ export default function SettingsPage() {
   return (
     <main className={styles.main}>
       <header className={styles.header}>
-        <Link href="/" className={styles.backLink}>
-          ← Back to Boards
-        </Link>
         <h1>User Settings</h1>
         <p className={styles.subtitle}>
           Update your profile email and customize your 3D emoji avatar.

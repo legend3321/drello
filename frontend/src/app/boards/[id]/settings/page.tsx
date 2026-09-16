@@ -232,12 +232,6 @@ export default function BoardSettingsPage({ params }: Props) {
 
   return (
     <main className={styles.main}>
-      <nav className={styles.nav}>
-        <Link href={`/boards/${board.id}`}>
-          <ArrowLeft size={14} /> Back to Board
-        </Link>
-      </nav>
-
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

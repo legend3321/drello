@@ -170,10 +170,6 @@ export default function TeamAdminDashboardPage() {
 
   return (
     <main className={styles.main}>
-      <Link href="/teams" className={styles.backLink}>
-        ← Teams
-      </Link>
-
       <header className={styles.header}>
         <h1>{team.name} — Admin</h1>
         <p className={styles.subtitle}>

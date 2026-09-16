@@ -1,9 +1,9 @@
 .card {
-  background: #111827;
-  border: 1px solid #1e293b;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 0.85rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -14,13 +14,13 @@
 .card:hover {
   border-color: #3b82f6;
   transform: translateY(-1px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 15px -3px var(--shadow-color);
 }
 
 .dragging {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 25px -5px var(--shadow-color);
   border-color: #3b82f6;
-  background: #182235;
+  background: var(--bg-hover);
 }
 
 .row {
@@ -47,9 +47,10 @@
 }
 
 .title {
+  margin: 0 0 0.4rem 0;
   font-size: 0.875rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
   line-height: 1.4;
   white-space: normal;
   word-break: break-word;
@@ -114,26 +115,26 @@
   border-radius: 4px;
   background-size: cover;
   background-position: center;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--border-color);
 }
 
 .attachmentOverflow {
   width: 36px;
   height: 36px;
   border-radius: 4px;
-  background: #1f2937;
-  border: 1px solid #1e293b;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* Checklist Preview inside Card */
 .checklistPreview {
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  border-top: 1px solid var(--border-color);
   padding-top: 0.5rem;
   display: flex;
   flex-direction: column;
@@ -145,12 +146,12 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .checklistItemDone {
   text-decoration: line-through;
-  color: #475569;
+  color: var(--text-dim);
 }
 
 .checkIcon {
@@ -159,7 +160,7 @@
 }
 
 .circleIcon {
-  color: #475569;
+  color: var(--text-dim);
   flex-shrink: 0;
 }
 
@@ -169,8 +170,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-  padding-top: 0.65rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.75rem;
+  margin-top: 0.2rem;
 }
 
 .metaLeft {
@@ -185,7 +187,7 @@
   gap: 0.25rem;
   font-size: 0.7rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-dim);
 }
 
 /* Priority Pills */
@@ -202,19 +204,19 @@
 
 .priorityhighest {
   background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .prioritymedium {
   background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
+  color: #d97706;
   border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .prioritylow {
   background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
+  color: #2563eb;
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
@@ -230,7 +232,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--text-dim);
 }
 
 /* Stacked Members Avatars */
@@ -241,7 +243,7 @@
 
 .avatarWrapper {
   margin-left: -6px;
-  border: 2px solid #111827;
+  border: 2px solid var(--bg-card);
   border-radius: 50%;
   overflow: hidden;
   display: flex;

@@ -16,10 +16,13 @@ html.dark {
   --bg-panel: #0c121e;
   --bg-sidebar: #0b121f;
   --bg-sidebar-bottom: #090d16;
-  --bg-card: #0f172a;
-  --bg-input: #111827;
+  --bg-card: #111827;
+  --bg-column: rgba(17, 24, 39, 0.6);
+  --bg-input: #090d16;
+  --bg-subtle: rgba(255, 255, 255, 0.03);
   --border-color: #1e293b;
   --border-color-light: #334155;
+  --border-subtle: rgba(255, 255, 255, 0.06);
   --text-main: #f1f5f9;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
@@ -30,17 +33,20 @@ html.dark {
 html.light {
   --bg-app: #f8fafc;
   --bg-panel: #ffffff;
-  --bg-sidebar: #f1f5f9;
-  --bg-sidebar-bottom: #e2e8f0;
+  --bg-sidebar: #f8fafc;
+  --bg-sidebar-bottom: #f1f5f9;
   --bg-card: #ffffff;
-  --bg-input: #f8fafc;
+  --bg-column: #f1f5f9;
+  --bg-input: #ffffff;
+  --bg-subtle: #f8fafc;
   --border-color: #e2e8f0;
   --border-color-light: #cbd5e1;
+  --border-subtle: #e2e8f0;
   --text-main: #0f172a;
   --text-muted: #475569;
   --text-dim: #64748b;
-  --shadow-color: rgba(0, 0, 0, 0.05);
-  --bg-hover: rgba(0, 0, 0, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.06);
+  --bg-hover: rgba(0, 0, 0, 0.04);
 }
 
 html,

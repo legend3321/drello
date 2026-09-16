@@ -3,33 +3,37 @@
   gap: 1rem;
   align-items: flex-start;
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 1rem;
-  min-height: calc(100vh - 8rem);
+  flex: 1;
+  min-height: 0;
 }
 
 .addColumn {
   flex: 0 0 280px;
-  background: #1e293b;
-  border: 2px dashed #334155;
+  background: var(--bg-card);
+  border: 2px dashed var(--border-color-light);
   border-radius: 12px;
   padding: 0.75rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .addTitle {
   margin: 0 0 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .addInput {
   width: 100%;
-  border: 1px solid #334155;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.5rem 0.65rem;
-  background: #0f172a;
-  color: #f1f5f9;
+  background: var(--bg-input);
+  color: var(--text-main);
   margin-bottom: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .addInput:focus {
@@ -38,15 +42,17 @@
 
 .addBtn {
   width: 100%;
-  background: #334155;
-  color: #e2e8f0;
+  background: #3b82f6;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 0.5rem;
+  padding: 0.55rem;
   font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .addBtn:hover {
-  background: #475569;
+  background: #2563eb;
 }

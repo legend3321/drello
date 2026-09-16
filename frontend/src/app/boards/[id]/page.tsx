@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { BoardWorkspace } from "@/components/BoardWorkspace";
 
 import styles from "./page.module.css";
@@ -18,9 +16,6 @@ export default async function BoardPage({ params }: Props) {
 
   return (
     <main className={styles.main}>
-      <nav className={styles.nav}>
-        <Link href="/">← All boards</Link>
-      </nav>
       <BoardWorkspace boardId={boardId} />
     </main>
   );
