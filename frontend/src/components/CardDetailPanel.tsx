@@ -11,7 +11,8 @@ import {
   Paperclip, 
   UserPlus, 
   AlignLeft, 
-  CheckSquare 
+  CheckSquare,
+  Check
 } from "lucide-react";
 
 import { api } from "@/lib/api";
@@ -30,7 +31,14 @@ type Props = {
 };
 
 // Available mockup label colors
-const LABEL_COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#db2777", "#a855f7", "#ef4444"];
+const LABEL_COLORS = [
+  { name: "Green", value: "#10b981" },
+  { name: "Blue", value: "#3b82f6" },
+  { name: "Orange", value: "#f59e0b" },
+  { name: "Pink", value: "#db2777" },
+  { name: "Purple", value: "#a855f7" },
+  { name: "Red", value: "#ef4444" },
+];
 
 export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: Props) {
   const board = useBoardStore((s) => s.board);
@@ -521,30 +529,36 @@ export function CardDetailPanel({ cardId, listId, isCreate = false, onClose }: P
               )}
 
               {addingLabel && (
-                <form onSubmit={addLabel} className={styles.addLabelContainer} style={{ display: "flex", gap: "0.25rem" }}>
-                  <input
-                    className={styles.addLabelInput}
-                    value={newLabelText}
-                    onChange={(e) => setNewLabelText(e.target.value)}
-                    placeholder="Tag name…"
-                    autoFocus
-                  />
-                  <select 
-                    className={styles.selectInput}
-                    style={{ width: "fit-content", padding: "0.15rem 0.35rem" }}
-                    value={newLabelColor}
-                    onChange={(e) => setNewLabelColor(e.target.value)}
-                  >
-                    {LABEL_COLORS.map(c => (
-                      <option key={c} value={c} style={{ color: c }}>Color</option>
+                <form onSubmit={addLabel} className={styles.addLabelContainer} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                    <input
+                      className={styles.addLabelInput}
+                      value={newLabelText}
+                      onChange={(e) => setNewLabelText(e.target.value)}
+                      placeholder="Tag name…"
+                      autoFocus
+                    />
+                    <button type="submit" className={styles.saveBtn} style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem" }}>
+                      Add
+                    </button>
+                    <button type="button" className={styles.cancelBtn} onClick={() => setAddingLabel(false)} style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}>
+                      Cancel
+                    </button>
+                  </div>
+                  <div className={styles.colorPickerRow}>
+                    {LABEL_COLORS.map((c) => (
+                      <button
+                        key={c.value}
+                        type="button"
+                        title={c.name}
+                        onClick={() => setNewLabelColor(c.value)}
+                        className={`${styles.colorSwatch} ${newLabelColor === c.value ? styles.colorSwatchSelected : ""}`}
+                        style={{ backgroundColor: c.value }}
+                      >
+                        {newLabelColor === c.value && <Check size={12} className={styles.colorCheck} />}
+                      </button>
                     ))}
-                  </select>
-                  <button type="submit" className={styles.saveBtn} style={{ padding: "0.15rem 0.45rem", fontSize: "0.7rem" }}>
-                    Add
-                  </button>
-                  <button type="button" className={styles.cancelBtn} onClick={() => setAddingLabel(false)} style={{ padding: "0.15rem 0.35rem", fontSize: "0.7rem" }}>
-                    Cancel
-                  </button>
+                  </div>
                 </form>
               )}
             </div>

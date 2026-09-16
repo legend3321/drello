@@ -45,15 +45,25 @@ class Command(BaseCommand):
 
         board.lists.all().delete()
         columns = [
-            ("Backlog", ["Research competitors", "Draft PRD"]),
-            ("In Progress", ["Kanban UI", "Django API"]),
-            ("Review", ["Code review"]),
-            ("Done", ["Repo scaffold"]),
+            ("Backlog", [
+                ("Research competitors", "Analyze leading task management tools to identify gaps in user experience, collaborative features, and workflow customization options for modern teams."),
+                ("Draft PRD", "Document key technical architecture, MVP scope, WebSocket synchronization protocol, and access control models for the product milestone release.")
+            ]),
+            ("In Progress", [
+                ("Kanban UI", "Create responsive drag-and-drop board interface with smooth animations, column state management, and detailed card inspect panel."),
+                ("Django API", "Implement RESTful endpoints and serializers with authentication, permissions checks, and relational models supporting real-time team collaboration.")
+            ]),
+            ("Review", [
+                ("Code review", "Audit code quality, accessibility labels, query performance, and security rules across all backend views and frontend components.")
+            ]),
+            ("Done", [
+                ("Repo scaffold", "Set up the monorepo configuration with Docker containers, CI pipelines, linting workflows, and local developer environment setup scripts.")
+            ]),
         ]
         for list_index, (title, cards) in enumerate(columns):
             list_obj = List.objects.create(board=board, title=title, position=list_index)
-            for card_index, card_title in enumerate(cards):
-                Card.objects.create(list=list_obj, title=card_title, position=card_index)
+            for card_index, (card_title, card_desc) in enumerate(cards):
+                Card.objects.create(list=list_obj, title=card_title, description=card_desc, position=card_index)
 
         self.stdout.write(
             self.style.SUCCESS(

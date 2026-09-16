@@ -78,12 +78,14 @@
 .description {
   margin: 0;
   font-size: 0.775rem;
-  color: #64748b;
-  line-height: 1.4;
+  color: var(--text-muted);
+  line-height: 1.45;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 /* Labels Badges */

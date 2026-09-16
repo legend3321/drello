@@ -344,6 +344,38 @@
   border-color: #3b82f6;
 }
 
+.colorPickerRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.colorSwatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.colorSwatch:hover {
+  transform: scale(1.15);
+}
+
+.colorSwatchSelected {
+  border-color: var(--text-main);
+  transform: scale(1.15);
+}
+
+.colorCheck {
+  color: #fff;
+}
+
 /* Attachments Layout Grid */
 .attachmentsGrid {
   display: flex;
