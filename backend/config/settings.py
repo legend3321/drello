@@ -62,18 +62,32 @@ TEMPLATES = [
     },
 ]
 
+# Database configuration: defaults to SQLite (ideal for Render without Postgres)
+# If Render persistent disk is mounted (e.g., /var/data), SQLITE_DB_PATH can point to it.
+SQLITE_DB_PATH = os.environ.get("SQLITE_DB_PATH")
+if SQLITE_DB_PATH:
+    db_path = Path(SQLITE_DB_PATH)
+else:
+    db_path = BASE_DIR / "db.sqlite3"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": db_path,
+        "TIMEOUT": 20,  # Increase timeout for concurrent writes
     }
 }
 
-if os.environ.get("DATABASE_URL"):
-    DATABASES["default"] = dj_database_url.config(
-        conn_max_age=600,
-        ssl_require=True
-    )
+# Only switch to external PostgreSQL if explicitly provided AND USE_SQLITE is not forced
+if os.environ.get("DATABASE_URL") and os.environ.get("USE_SQLITE", "").lower() not in ("1", "true", "yes"):
+    # If explicitly using SQLite on Render or DATABASE_URL starts with sqlite, parse accordingly
+    if os.environ.get("DATABASE_URL", "").startswith("sqlite"):
+        DATABASES["default"] = dj_database_url.config()
+    else:
+        DATABASES["default"] = dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=True
+        )
 
 
 AUTH_PASSWORD_VALIDATORS = [
