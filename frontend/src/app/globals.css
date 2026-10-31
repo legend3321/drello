@@ -12,41 +12,47 @@
 
 :root,
 html.dark {
-  --bg-app: #080d16;
-  --bg-panel: #0c121e;
-  --bg-sidebar: #0b121f;
-  --bg-sidebar-bottom: #090d16;
-  --bg-card: #111827;
-  --bg-column: rgba(17, 24, 39, 0.6);
-  --bg-input: #090d16;
+  /* Graphite neutral ramp from unslop spec */
+  --bg-app: #141415;
+  --bg-panel: #19191b;
+  --bg-sidebar: #0f0f10;
+  --bg-sidebar-bottom: #0f0f10;
+  --bg-card: #19191b;
+  --bg-column: #141415;
+  --bg-input: #232325;
   --bg-subtle: rgba(255, 255, 255, 0.03);
-  --border-color: #1e293b;
-  --border-color-light: #334155;
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --shadow-color: rgba(0, 0, 0, 0.4);
+  --border-color: rgba(237, 237, 237, 0.08);
+  --border-color-light: rgba(237, 237, 237, 0.12);
+  --border-subtle: rgba(237, 237, 237, 0.05);
+  --text-main: #ededed;
+  --text-muted: #a1a1a6;
+  --text-dim: #85858b;
+  --shadow-color: rgba(0, 0, 0, 0.25);
   --bg-hover: rgba(255, 255, 255, 0.05);
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
 
 html.light {
-  --bg-app: #f8fafc;
+  /* Clean graphite light ramp */
+  --bg-app: #fafafa;
   --bg-panel: #ffffff;
-  --bg-sidebar: #f8fafc;
-  --bg-sidebar-bottom: #f1f5f9;
+  --bg-sidebar: #fafafa;
+  --bg-sidebar-bottom: #f4f4f5;
   --bg-card: #ffffff;
-  --bg-column: #f1f5f9;
-  --bg-input: #ffffff;
-  --bg-subtle: #f8fafc;
-  --border-color: #e2e8f0;
-  --border-color-light: #cbd5e1;
-  --border-subtle: #e2e8f0;
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-dim: #64748b;
-  --shadow-color: rgba(0, 0, 0, 0.06);
+  --bg-column: #f4f4f5;
+  --bg-input: #f4f4f5;
+  --bg-subtle: #fafafa;
+  --border-color: rgba(23, 23, 23, 0.08);
+  --border-color-light: rgba(23, 23, 23, 0.14);
+  --border-subtle: rgba(23, 23, 23, 0.05);
+  --text-main: #171717;
+  --text-muted: #525252;
+  --text-dim: #737373;
+  --shadow-color: rgba(0, 0, 0, 0.05);
   --bg-hover: rgba(0, 0, 0, 0.04);
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
 
 html,
@@ -56,15 +62,16 @@ body {
   min-height: 100%;
   font-family:
     "Inter",
-    system-ui,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
+    Roboto,
     sans-serif;
   background: var(--bg-app);
   color: var(--text-main);
   overflow-x: hidden;
-  transition: background-color 0.2s, color 0.2s;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Custom Scrollbars */

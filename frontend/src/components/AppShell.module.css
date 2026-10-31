@@ -25,7 +25,7 @@
 .brandArea {
   height: 64px;
   box-sizing: border-box;
-  padding: 0 1.25rem;
+  padding: 0 1rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -34,34 +34,34 @@
 }
 
 .trelloIcon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background: #2563eb;
   border-radius: 4px;
   display: flex;
-  gap: 3px;
-  padding: 4px;
+  gap: 2px;
+  padding: 3px;
 }
 
 .trelloIconBar1 {
-  width: 7px;
-  height: 12px;
+  width: 6px;
+  height: 11px;
   background: #fff;
   border-radius: 1px;
 }
 
 .trelloIconBar2 {
-  width: 7px;
-  height: 8px;
+  width: 6px;
+  height: 7px;
   background: #fff;
   border-radius: 1px;
 }
 
 .brandText {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.125rem;
+  font-weight: 600;
   color: var(--text-main);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
 }
 
 .navSection {
@@ -397,8 +397,9 @@
 }
 
 .toggleBtnActive {
-  background: var(--border-color-light, #1e293b);
+  background: var(--bg-card);
   color: var(--text-main);
+  box-shadow: 0 1px 2px var(--shadow-color);
 }
 
 .actionIcons {

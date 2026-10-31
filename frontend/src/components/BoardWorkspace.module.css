@@ -54,24 +54,27 @@
 
 .boardTitle {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--text-main);
+  letter-spacing: -0.01em;
 }
 
 .deleteBoard {
   background: transparent;
-  border: 1px solid #ef4444;
-  color: #ef4444;
+  border: 1px solid rgba(229, 72, 77, 0.3);
+  color: #e5484d;
   border-radius: 6px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.15s;
 }
 
 .deleteBoard:hover {
-  background: #ef4444;
-  color: #fff;
+  background: rgba(229, 72, 77, 0.1);
+  border-color: #e5484d;
 }
 
 .headerActions {
@@ -83,10 +86,11 @@
 .historyBtn {
   background: transparent;
   border: 1px solid var(--border-color);
-  color: var(--text-dim);
+  color: var(--text-muted);
   border-radius: 6px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
 }

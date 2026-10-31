@@ -27,21 +27,18 @@ function getGradient(username: string): string {
   return GRADIENTS[index];
 }
 
-export function EmojiAvatar({ emoji, username, size = 32, className = "" }: Props) {
-  const gradient = getGradient(username);
-
+export function EmojiAvatar({ emoji, username, size = 28, className = "" }: Props) {
   return (
     <div
       className={`${styles.avatar} ${className}`}
       style={{
         width: `${size}px`,
         height: `${size}px`,
-        background: gradient,
-        fontSize: `${size * 0.55}px`,
+        fontSize: `${Math.round(size * 0.52)}px`,
       }}
       title={`@${username}`}
     >
-      <span className={styles.emoji}>{emoji || "😀"}</span>
+      <span className={styles.emoji}>{emoji || "👤"}</span>
     </div>
   );
 }
