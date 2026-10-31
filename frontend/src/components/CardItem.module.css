@@ -1,11 +1,13 @@
 .card {
   background: var(--bg-card);
+  backdrop-filter: var(--card-backdrop, blur(12px));
+  -webkit-backdrop-filter: var(--card-backdrop, blur(12px));
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.875rem 1rem;
-  box-shadow: 0 1px 2px var(--shadow-color);
+  box-shadow: var(--card-shadow, 0 1px 2px var(--shadow-color));
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -13,7 +15,7 @@
 
 .card:hover {
   border-color: var(--border-color-light);
-  background: var(--bg-hover);
+  background: var(--bg-card-hover, var(--bg-hover));
 }
 
 .dragging {

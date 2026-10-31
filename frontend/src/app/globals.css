@@ -17,12 +17,18 @@ html.dark {
   --bg-panel: #19191b;
   --bg-sidebar: #0f0f10;
   --bg-sidebar-bottom: #0f0f10;
-  --bg-card: #19191b;
-  --bg-column: #141415;
+  /* Card with glass translucency */
+  --bg-card: rgba(25, 25, 27, 0.72);
+  --bg-card-hover: rgba(35, 35, 37, 0.82);
+  --card-backdrop: blur(12px);
+  --card-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --board-dot: rgba(255, 255, 255, 0.08);
+  --bg-column: rgba(20, 20, 21, 0.65);
+  --column-backdrop: blur(10px);
   --bg-input: #232325;
   --bg-subtle: rgba(255, 255, 255, 0.03);
   --border-color: rgba(237, 237, 237, 0.08);
-  --border-color-light: rgba(237, 237, 237, 0.12);
+  --border-color-light: rgba(237, 237, 237, 0.14);
   --border-subtle: rgba(237, 237, 237, 0.05);
   --text-main: #ededed;
   --text-muted: #a1a1a6;
@@ -39,8 +45,13 @@ html.light {
   --bg-panel: #ffffff;
   --bg-sidebar: #fafafa;
   --bg-sidebar-bottom: #f4f4f5;
-  --bg-card: #ffffff;
-  --bg-column: #f4f4f5;
+  --bg-card: rgba(255, 255, 255, 0.75);
+  --bg-card-hover: rgba(255, 255, 255, 0.9);
+  --card-backdrop: blur(12px);
+  --card-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --board-dot: rgba(0, 0, 0, 0.08);
+  --bg-column: rgba(244, 244, 245, 0.75);
+  --column-backdrop: blur(10px);
   --bg-input: #f4f4f5;
   --bg-subtle: #fafafa;
   --border-color: rgba(23, 23, 23, 0.08);

@@ -1,6 +1,8 @@
 .column {
   flex: 0 0 280px;
   background: var(--bg-column);
+  backdrop-filter: var(--column-backdrop, blur(10px));
+  -webkit-backdrop-filter: var(--column-backdrop, blur(10px));
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.75rem;
