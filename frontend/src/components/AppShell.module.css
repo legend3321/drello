@@ -151,42 +151,202 @@
 }
 
 /* Categories Section */
+.categorySection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .sectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.75rem;
-  margin-bottom: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
-.sectionHeader span {
-  font-size: 0.75rem;
+.categoryTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.categoryTitleWrapper span {
+  font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: #475569;
-  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+.categoryIcon {
+  color: var(--text-dim);
 }
 
 .sectionAddBtn {
   background: transparent;
-  border: none;
-  color: #64748b;
-  font-size: 1rem;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  font-size: 0.85rem;
   cursor: pointer;
-  padding: 0 0.25rem;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 4px;
+  transition: all 0.15s ease;
 }
 
 .sectionAddBtn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  background: var(--bg-hover);
+  border-color: var(--border-color);
 }
 
-.categoryDot {
-  width: 8px;
-  height: 8px;
+.categoryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.categoryItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.categoryItem:hover {
+  background: var(--bg-hover);
+  color: var(--text-main);
+}
+
+.categoryItemActive {
+  background: rgba(37, 99, 235, 0.1);
+  color: #3b82f6 !important;
+  font-weight: 600;
+}
+
+.categoryItemBullet {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
+  background: var(--border-color);
   flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+.categoryItem:hover .categoryItemBullet {
+  background: var(--text-dim);
+}
+
+.categoryItemActive .categoryItemBullet {
+  background: #3b82f6;
+}
+
+.categoryItemText {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoryBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  background: var(--bg-hover);
+  color: var(--text-dim);
+  border: 1px solid var(--border-color);
+}
+
+.emptyNotice {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* Inline Add Form */
+.inlineAddForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  margin-bottom: 0.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.inlineAddInput {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-main);
+  outline: none;
+}
+
+.inlineAddInput:focus {
+  border-color: #3b82f6;
+}
+
+.inlineAddActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.inlineSubmitBtn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.inlineSubmitBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.inlineSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.inlineCancelBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.inlineCancelBtn:hover {
+  color: var(--text-main);
+  background: var(--bg-hover);
 }
 
 /* User Card area */

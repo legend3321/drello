@@ -1,14 +1,15 @@
 .column {
   flex: 0 0 280px;
   background: var(--bg-column);
-  backdrop-filter: var(--column-backdrop, blur(10px));
-  -webkit-backdrop-filter: var(--column-backdrop, blur(10px));
+  backdrop-filter: var(--column-backdrop, blur(14px));
+  -webkit-backdrop-filter: var(--column-backdrop, blur(14px));
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 0.75rem;
+  border-radius: 10px;
+  padding: 0.875rem;
   display: flex;
   flex-direction: column;
   max-height: 100%;
+  box-shadow: var(--column-shadow, 0 4px 20px -2px var(--shadow-color));
 }
 
 .header {

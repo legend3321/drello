@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { 
   Grid, 
   Users, 
@@ -14,13 +14,17 @@ import {
   X, 
   Menu,
   Sun,
-  Moon
+  Moon,
+  Plus,
+  Layout,
+  Briefcase
 } from "lucide-react";
 
 import { useAuthStore } from "@/store/authStore";
 import { useBoardStore } from "@/store/boardStore";
 import { api } from "@/lib/api";
 import type { ActivityLog, BoardSummary } from "@/types/board";
+import type { TeamSummary } from "@/types/team";
 import { EmojiAvatar } from "./EmojiAvatar";
 import styles from "./AppShell.module.css";
 
@@ -35,6 +39,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [themeMode, setThemeMode] = useState<"light" | "dark">("dark");
   
+  // Sidebar data
+  const [boards, setBoards] = useState<BoardSummary[]>([]);
+  const [teams, setTeams] = useState<TeamSummary[]>([]);
+  const [isCreatingBoard, setIsCreatingBoard] = useState(false);
+  const [newBoardTitle, setNewBoardTitle] = useState("");
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false);
+  const [newTeamName, setNewTeamName] = useState("");
+  const [sidebarLoading, setSidebarLoading] = useState(false);
+
   // New States for Search & Notifications
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,6 +60,77 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
+  const boardInputRef = useRef<HTMLInputElement>(null);
+  const teamInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch sidebar data (boards & teams)
+  const refreshSidebarData = useCallback(async () => {
+    if (!user) return;
+    try {
+      setSidebarLoading(true);
+      const [fetchedBoards, fetchedTeams] = await Promise.all([
+        api.listBoards(),
+        api.listTeams(),
+      ]);
+      setBoards(fetchedBoards);
+      setTeams(fetchedTeams);
+      setAllBoards(fetchedBoards);
+    } catch (e) {
+      console.error("Failed to load sidebar data", e);
+    } finally {
+      setSidebarLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      void refreshSidebarData();
+    }
+  }, [user, refreshSidebarData]);
+
+  // Focus inputs when inline form opens
+  useEffect(() => {
+    if (isCreatingBoard) {
+      setTimeout(() => boardInputRef.current?.focus(), 50);
+    }
+  }, [isCreatingBoard]);
+
+  useEffect(() => {
+    if (isCreatingTeam) {
+      setTimeout(() => teamInputRef.current?.focus(), 50);
+    }
+  }, [isCreatingTeam]);
+
+  // Handlers for adding Board & Team
+  const handleCreateBoard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const title = newBoardTitle.trim();
+    if (!title) return;
+    try {
+      const created = await api.createBoard(title);
+      setNewBoardTitle("");
+      setIsCreatingBoard(false);
+      await refreshSidebarData();
+      router.push(`/boards/${created.id}`);
+    } catch (err) {
+      console.error("Failed to create board:", err);
+    }
+  };
+
+  const handleCreateTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newTeamName.trim();
+    if (!name) return;
+    try {
+      const created = await api.createTeam(name);
+      setNewTeamName("");
+      setIsCreatingTeam(false);
+      await refreshSidebarData();
+      router.push(`/teams/${created.id}/admin`);
+    } catch (err) {
+      console.error("Failed to create team:", err);
+    }
+  };
 
   // Close dropdowns on click outside
   useEffect(() => {
@@ -254,26 +338,152 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className={styles.navSection}>
-          <ul className={styles.menuList}>
-            <li>
-              <Link 
-                href="/" 
-                className={`${styles.menuLink} ${pathname === "/" ? styles.menuLinkActive : ""}`}
+          {/* Boards Category */}
+          <div className={styles.categorySection}>
+            <div className={styles.sectionHeader}>
+              <div className={styles.categoryTitleWrapper}>
+                <Layout size={14} className={styles.categoryIcon} />
+                <span>Boards</span>
+              </div>
+              <button 
+                type="button" 
+                className={styles.sectionAddBtn}
+                title="Add new board"
+                onClick={() => {
+                  setIsCreatingBoard(!isCreatingBoard);
+                  setIsCreatingTeam(false);
+                }}
+                aria-label="Add new board"
               >
-                <span className={styles.menuLinkIcon}><Grid size={18} /></span>
-                <span className={styles.menuLinkText}>Boards</span>
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href="/teams" 
-                className={`${styles.menuLink} ${pathname.startsWith("/teams") ? styles.menuLinkActive : ""}`}
+                <Plus size={14} />
+              </button>
+            </div>
+
+            {/* Inline Add Board Form */}
+            {isCreatingBoard && (
+              <form onSubmit={handleCreateBoard} className={styles.inlineAddForm}>
+                <input
+                  ref={boardInputRef}
+                  type="text"
+                  placeholder="Board title..."
+                  className={styles.inlineAddInput}
+                  value={newBoardTitle}
+                  onChange={(e) => setNewBoardTitle(e.target.value)}
+                />
+                <div className={styles.inlineAddActions}>
+                  <button type="submit" className={styles.inlineSubmitBtn} disabled={!newBoardTitle.trim()}>
+                    Add
+                  </button>
+                  <button 
+                    type="button" 
+                    className={styles.inlineCancelBtn}
+                    onClick={() => {
+                      setIsCreatingBoard(false);
+                      setNewBoardTitle("");
+                    }}
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Boards List */}
+            <ul className={styles.categoryList}>
+              {boards.map((b) => {
+                const isActive = pathname === `/boards/${b.id}`;
+                return (
+                  <li key={b.id}>
+                    <Link
+                      href={`/boards/${b.id}`}
+                      className={`${styles.categoryItem} ${isActive ? styles.categoryItemActive : ""}`}
+                    >
+                      <span className={styles.categoryItemBullet} />
+                      <span className={styles.categoryItemText}>{b.title}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+              {boards.length === 0 && !sidebarLoading && (
+                <li className={styles.emptyNotice}>No boards yet</li>
+              )}
+            </ul>
+          </div>
+
+          {/* Teams Category */}
+          <div className={styles.categorySection}>
+            <div className={styles.sectionHeader}>
+              <div className={styles.categoryTitleWrapper}>
+                <Briefcase size={14} className={styles.categoryIcon} />
+                <span>Teams</span>
+              </div>
+              <button 
+                type="button" 
+                className={styles.sectionAddBtn}
+                title="Add new team"
+                onClick={() => {
+                  setIsCreatingTeam(!isCreatingTeam);
+                  setIsCreatingBoard(false);
+                }}
+                aria-label="Add new team"
               >
-                <span className={styles.menuLinkIcon}><Users size={18} /></span>
-                <span className={styles.menuLinkText}>Teams</span>
-              </Link>
-            </li>
-          </ul>
+                <Plus size={14} />
+              </button>
+            </div>
+
+            {/* Inline Add Team Form */}
+            {isCreatingTeam && (
+              <form onSubmit={handleCreateTeam} className={styles.inlineAddForm}>
+                <input
+                  ref={teamInputRef}
+                  type="text"
+                  placeholder="Team name..."
+                  className={styles.inlineAddInput}
+                  value={newTeamName}
+                  onChange={(e) => setNewTeamName(e.target.value)}
+                />
+                <div className={styles.inlineAddActions}>
+                  <button type="submit" className={styles.inlineSubmitBtn} disabled={!newTeamName.trim()}>
+                    Add
+                  </button>
+                  <button 
+                    type="button" 
+                    className={styles.inlineCancelBtn}
+                    onClick={() => {
+                      setIsCreatingTeam(false);
+                      setNewTeamName("");
+                    }}
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Teams List */}
+            <ul className={styles.categoryList}>
+              {teams.map((t) => {
+                const isActive = pathname.startsWith(`/teams/${t.id}`);
+                return (
+                  <li key={t.id}>
+                    <Link
+                      href={`/teams/${t.id}/admin`}
+                      className={`${styles.categoryItem} ${isActive ? styles.categoryItemActive : ""}`}
+                    >
+                      <span className={styles.categoryItemBullet} />
+                      <span className={styles.categoryItemText}>{t.name}</span>
+                      {t.member_count !== undefined && (
+                        <span className={styles.categoryBadge}>{t.member_count}</span>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+              {teams.length === 0 && !sidebarLoading && (
+                <li className={styles.emptyNotice}>No teams yet</li>
+              )}
+            </ul>
+          </div>
         </div>
 
         {/* Bottom User profile card */}

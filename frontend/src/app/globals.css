@@ -17,14 +17,16 @@ html.dark {
   --bg-panel: #19191b;
   --bg-sidebar: #0f0f10;
   --bg-sidebar-bottom: #0f0f10;
-  /* Card with glass translucency */
-  --bg-card: rgba(25, 25, 27, 0.72);
-  --bg-card-hover: rgba(35, 35, 37, 0.82);
-  --card-backdrop: blur(12px);
-  --card-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  /* Solid clean card background */
+  --bg-card: #19191b;
+  --bg-card-hover: #232325;
+  --card-backdrop: none;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   --board-dot: rgba(255, 255, 255, 0.08);
+  /* Glassmorphic Kanban column */
   --bg-column: rgba(20, 20, 21, 0.65);
-  --column-backdrop: blur(10px);
+  --column-backdrop: blur(14px);
+  --column-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --bg-input: #232325;
   --bg-subtle: rgba(255, 255, 255, 0.03);
   --border-color: rgba(237, 237, 237, 0.08);
@@ -45,13 +47,14 @@ html.light {
   --bg-panel: #ffffff;
   --bg-sidebar: #fafafa;
   --bg-sidebar-bottom: #f4f4f5;
-  --bg-card: rgba(255, 255, 255, 0.75);
-  --bg-card-hover: rgba(255, 255, 255, 0.9);
-  --card-backdrop: blur(12px);
-  --card-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --bg-card: #ffffff;
+  --bg-card-hover: #fcfcfc;
+  --card-backdrop: none;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   --board-dot: rgba(0, 0, 0, 0.08);
-  --bg-column: rgba(244, 244, 245, 0.75);
-  --column-backdrop: blur(10px);
+  --bg-column: rgba(244, 244, 245, 0.7);
+  --column-backdrop: blur(14px);
+  --column-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7);
   --bg-input: #f4f4f5;
   --bg-subtle: #fafafa;
   --border-color: rgba(23, 23, 23, 0.08);
